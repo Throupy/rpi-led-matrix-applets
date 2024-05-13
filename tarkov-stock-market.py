@@ -97,7 +97,7 @@ def display_item_on_matrix(display_item: DisplayItem, matrix: RGBMatrix):
     :param matrix: Instance of RGBMatrix to display the data on.
     """
     try:
-        # Load and resize image
+        # CBA to download all images, just use raw img stream from requests.get()
         image = Image.open(requests.get(display_item.icon_link, stream=True).raw)
         image = image.resize((16, 16))
     except (requests.RequestException, UnidentifiedImageError) as e:
@@ -106,31 +106,21 @@ def display_item_on_matrix(display_item: DisplayItem, matrix: RGBMatrix):
 
     # Prepare the price change text with a "+" if positive
     change_text = f"{display_item.change_last_48h_percent:+.2f}%"
-    # Prepare text to scroll
     text = f" {display_item.name} ₽{display_item.price} {change_text}"
-
-    # Set text color based on change_last_48h_percent
     color = graphics.Color(240, 15, 0) if display_item.change_last_48h_percent < 0 else graphics.Color(0, 255, 0)
-
-    # Create a font
     font = graphics.Font()
     font.LoadFont("bdf/verdana-8pt.bdf")
-
     # Calculate the total width for scrolling (image width + text width)
     text_length = graphics.DrawText(matrix.CreateFrameCanvas(), font, 0, 0, color, text)
     total_length = 16 + text_length  # 16 for the image width
-
     # Scroll the entire image and text together
     offscreen_canvas = matrix.CreateFrameCanvas()
     pos = offscreen_canvas.width
 
     while pos + total_length > 0:
         offscreen_canvas.Clear()
-        # Draw the image
         offscreen_canvas.SetImage(image.convert('RGB'), pos, 0)
-        # Draw the text
         graphics.DrawText(offscreen_canvas, font, pos + 16, 12, color, text)
-
         pos -= 1
         offscreen_canvas = matrix.SwapOnVSync(offscreen_canvas)
         time.sleep(0.02)  # Adjust the speed of scrolling
