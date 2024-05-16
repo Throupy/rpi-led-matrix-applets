@@ -10,6 +10,7 @@ options.cols = 64
 options.chain_length = 1
 options.parallel = 1
 options.hardware_mapping = 'adafruit-hat'
+options.gpio_slowdown = 2
 matrix = RGBMatrix(options=options)
 
 def load_and_convert_image(image_path):
@@ -83,17 +84,16 @@ bugs, bots = fetch_data()
 try:
     while True:
         current_time = time.time()
-        
         # Make the API request every 10 seconds
         if current_time - last_switch_time >= 10:
             bugs, bots = fetch_data()
-        current_text = bugs if current_image == image_bugs else bots
-        update_display(current_image, current_text)
         
         # every 5 secs, swap bots and bugs
         if current_time - last_switch_time >= 5:
             current_image = image_bots if current_image == image_bugs else image_bugs
             last_switch_time = current_time
+            current_text = bugs if current_image == image_bugs else bots
+            update_display(current_image, current_text)
 except KeyboardInterrupt:
     pass
 finally:
