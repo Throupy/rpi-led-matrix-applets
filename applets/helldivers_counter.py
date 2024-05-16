@@ -79,6 +79,7 @@ class HelldiversKillCounter(Applet):
 
     def start(self) -> None:
         """Start the applet"""
+        self.log("Starting")
         while True:
             current_time = time.time()
 
@@ -96,6 +97,7 @@ class HelldiversKillCounter(Applet):
 
     def stop(self) -> None:
         """Stop the applet"""
+        self.log("Stopping")
         self.display.matrix.Clear()
         # need to handle destruction here..
         # @chadders recall our conversation about memory management
