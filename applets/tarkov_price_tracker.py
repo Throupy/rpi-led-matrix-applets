@@ -91,6 +91,7 @@ class TarkovPriceTracker(Applet):
 
     def fetch_items(self) -> None:
         """Fetch all the selected items' information from the API"""
+        self.log("Fetching items from the Tarkov API")
         for item_name in self.item_names:
             query = generate_query(item_name)
             try:
@@ -133,6 +134,7 @@ class TarkovPriceTracker(Applet):
 
     def start(self) -> None:
         """Start the applet"""
+        self.log("Starting")
         while True:
             self.fetch_items()
             for i in range(0, len(self.items), 4):
@@ -141,4 +143,5 @@ class TarkovPriceTracker(Applet):
 
     def stop(self) -> None:
         """Stop the applet"""
+        self.log("Stopping")
         self.display.matrix.Clear()
