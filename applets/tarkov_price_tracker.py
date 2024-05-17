@@ -1,4 +1,5 @@
 import requests
+import os
 import time
 from typing import List, Dict, Optional
 from rgbmatrix import graphics
@@ -93,9 +94,7 @@ class TarkovPriceTracker(Applet):
 
     def __init__(self, display: MatrixDisplay) -> None:
         """Initialisation function"""
-        print("init")
         super().__init__("Tarkov Price Tracker", display)
-        print("creating item naemes")
         self.item_names = [
             "LEDX",
             "Graphics Card",
@@ -108,6 +107,32 @@ class TarkovPriceTracker(Applet):
             "Intelligence",
         ]
         self.items = []
+        self.images = {}
+
+    def load_and_convert_image(self, image_path: str, icon_link: str) -> Image:
+        """Load image from URL and convert into displayable format, save as BMP if required"""
+        # bmp_path = image_path.replace(".png", ".bmp")
+        bmp_path = image_path.replace(".png", ".bmp")
+        if os.path.exists(bmp_path):
+            self.log(f"Using file from disk - {bmp_path}")
+            image = Image.open(bmp_path)
+        else:
+            self.log(
+                f"Image for {image_path.split('/')[-1].split('.')[0]} not found on disk - downloading, converting and saving"
+            )
+            image_data = requests.get(icon_link, stream=True)
+            image = Image.open(image_data.raw)
+            image = image.convert("RGBA")
+            data = image.getdata()
+
+            new_data = []
+            for item in data:
+                new_data.append(item)
+
+            image.putdata(new_data)
+            image = image.resize((16, 16))
+            image.save(bmp_path)
+        return image
 
     def fetch_items(self) -> None:
         """Fetch all the selected items' information from the API"""
@@ -119,25 +144,25 @@ class TarkovPriceTracker(Applet):
                 display_item = DisplayItem.from_graphql(result)
                 if display_item:
                     self.items.append(display_item)
+                    # e.g. ledx.png
+                    image_path = f"resources/images/{item_name.lower().replace(' ', '_')}.png"
+                    self.images[display_item.name] = self.load_and_convert_image(
+                        image_path, display_item.icon_link
+                    )
                 else:
                     self.log(f"No item found for {item_name}.")
             except Exception as e:
                 self.log(f"Error retrieving data for {item_name}: {e}")
 
-    def display_items(self, item: List[DisplayItem]) -> None:
+    def display_items(self, items: List[DisplayItem]) -> None:
         """Display the selected items onto the matrix"""
         font = self.display.font
 
-        images = []
-        for item in self.items:
-            image = Image.open(requests.get(item.icon_link, stream=True).raw)
-            image = image.resize((16, 16))
-            images.append(image)
-
         offscreen_canvas = self.display.matrix.CreateFrameCanvas()
 
-        for index, item in enumerate(self.items):
-            offscreen_canvas.SetImage(images[index].convert("RGB"), 0, index * 16)
+        for index, item in enumerate(items):
+            image = self.images[item.name]
+            offscreen_canvas.SetImage(image.convert("RGB"), 0, index * 16)
             short_price = shorten_price(item.price)
             if item.change_last_48h_percent:
                 change_text = f"{item.change_last_48h_percent:+.1f}%"
@@ -160,11 +185,8 @@ class TarkovPriceTracker(Applet):
         """Start the applet"""
         self.log("Starting")
         while True:
-            print("inside while true - calling fetch")
             self.fetch_items()
-            print("starting for loop")
             for i in range(0, len(self.items), 4):
-                print("inside for loop - displaying items")
                 self.display_items(self.items[i : i + 4])
                 time.sleep(10)  # Refresh every 10 seconds
 
