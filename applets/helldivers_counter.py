@@ -56,7 +56,7 @@ class HelldiversKillCounter(Applet):
             self.log(f"Fetched data from the HellDivers API - bug count : bot count = {bugs} : {bots}")
             return bugs, bots
         except (requests.exceptions.RequestException, json.JSONDecodeError):
-            print("There was an error fetching the helldivers data...")
+            self.log("There was an error fetching the helldivers data...")
             return None, None
 
     def update_display(self, image: Image, text: str) -> None:
