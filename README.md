@@ -6,3 +6,6 @@ Some small applets that are designed to run on a 64x64 LED matrix with a Raspber
 - [ ] Applet.stop() needs some more sort of memory management - destruction
 - [ ] Improve README
 - [ ] Add an Applet template
+
+## Applet Ideas:
+- [ ] Internet speed test
