@@ -5,8 +5,10 @@ from applets.helldivers_counter import HelldiversKillCounter
 from applets.tarkov_price_tracker import TarkovPriceTracker
 from applets.base_applet import Applet
 
+
 class MasterApp:
     """Master Application - will control all functionality"""
+
     def __init__(self, applets: Dict[str, Type], display: MatrixDisplay) -> None:
         """Initialise a new MasterApp Instance"""
         # Initialize with a dictionary of applet names to classes
@@ -37,7 +39,11 @@ class MasterApp:
             # this is because first applet on second page (assuming 2 per page) would have index
             # 0 in this loop, but 2 in the self.applets.
             i += start_index
-            color = graphics.Color(255, 0, 0) if i == self.current_index else graphics.Color(100, 100, 100)
+            color = (
+                graphics.Color(255, 0, 0)
+                if i == self.current_index
+                else graphics.Color(100, 100, 100)
+            )
             wrapped_text = self.wrap_text(applet, 14)  # this is width
             for line in wrapped_text:
                 graphics.DrawText(self.display.matrix, self.display.font, 1, y_offset, color, line)
@@ -54,7 +60,12 @@ class MasterApp:
         text_x = (self.display.matrix.width - text_length) // 2
         text_y = self.display.matrix.height - 4  # near the bottom
         graphics.DrawText(
-            self.display.matrix, self.display.font, text_x, text_y, indicator_color, page_indicator_text
+            self.display.matrix,
+            self.display.font,
+            text_x,
+            text_y,
+            indicator_color,
+            page_indicator_text,
         )
 
     def navigate_menu(self, direction: str) -> None:
@@ -84,7 +95,8 @@ class MasterApp:
         AppletClass = self.applets[applet_name]
         selected_applet = AppletClass(self.display)
 
-        # This try, except, finally block allows us to CTRL+C out of the applet and return to the menu.
+        # This try, except, finally block allows us to
+        # CTRL+C out of the applet and return to the menu.
         try:
             selected_applet.start()
         except KeyboardInterrupt:
@@ -112,7 +124,6 @@ class MasterApp:
                 break
 
 
-
 if __name__ == "__main__":
     # Going to pass this into the MasterApp
     # this means nothing gets instantiated until we select it
@@ -122,7 +133,7 @@ if __name__ == "__main__":
         "Tarkov Price Tracker": TarkovPriceTracker,
         "Helldivers Kill Counter": HelldiversKillCounter,
         "First Applet": Applet,
-        "Second Applet": Applet
+        "Second Applet": Applet,
     }
     # here is our ONLY matrix display ever instantiated - will be passed through
     display = MatrixDisplay()

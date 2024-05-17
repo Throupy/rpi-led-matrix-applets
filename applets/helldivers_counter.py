@@ -9,11 +9,12 @@ from applets.base_applet import Applet
 
 class HelldiversKillCounter(Applet):
     """Helldivers Kill Counter Definition"""
+
     def __init__(self, display: MatrixDisplay) -> None:
         """Initialisation function"""
         super().__init__("Helldivers Kill Counter", display)
-        self.image_bugs = self.load_and_convert_image('resources/images/bugs.png')
-        self.image_bots = self.load_and_convert_image('resources/images/bots.png')
+        self.image_bugs = self.load_and_convert_image("resources/images/bugs.png")
+        self.image_bots = self.load_and_convert_image("resources/images/bots.png")
         # start displaying terminid kill count
         self.current_image = self.image_bugs
         self.last_switch_time = time.time()
@@ -30,9 +31,11 @@ class HelldiversKillCounter(Applet):
         new_data = []
         for item in data:
             # this conditional is horrific - surely a better way to do this..
-            if item[0] in list(range(200, 256)) and \
-                item[1] in list(range(200, 256)) and \
-                    item[2] in list(range(200, 256)):
+            if (
+                item[0] in list(range(200, 256))
+                and item[1] in list(range(200, 256))
+                and item[2] in list(range(200, 256))
+            ):
                 if "bugs" in image_path:
                     new_data.append((255, 165, 0, item[3]))  # orange
                 elif "bots" in image_path:
@@ -53,7 +56,9 @@ class HelldiversKillCounter(Applet):
             data = response.json()
             bugs = str(data["galaxy_stats"]["bugKills"])
             bots = str(data["galaxy_stats"]["automatonKills"])
-            self.log(f"Fetched data from the HellDivers API - bug count : bot count = {bugs} : {bots}")
+            self.log(
+                f"Fetched data from the HellDivers API - bug count : bot count = {bugs} : {bots}"
+            )
             return bugs, bots
         except (requests.exceptions.RequestException, json.JSONDecodeError):
             self.log("There was an error fetching the helldivers data...")
@@ -68,13 +73,23 @@ class HelldiversKillCounter(Applet):
         self.display.matrix.SetImage(image.convert("RGB"), x_offset, y_offset)
 
         text_width = graphics.DrawText(
-            self.display.matrix, self.display.font, 0, 0, graphics.Color(255, 255, 255), text
+            self.display.matrix,
+            self.display.font,
+            0,
+            0,
+            graphics.Color(255, 255, 255),
+            text,
         )
         text_x = (self.display.matrix.width - text_width) // 2
         text_y = y_offset + 32 + 10
 
         graphics.DrawText(
-            self.display.matrix, self.display.font, text_x, text_y, graphics.Color(255, 255, 255), text
+            self.display.matrix,
+            self.display.font,
+            text_x,
+            text_y,
+            graphics.Color(255, 255, 255),
+            text,
         )
 
     def start(self) -> None:
@@ -88,8 +103,14 @@ class HelldiversKillCounter(Applet):
                 self.last_fetch_time = current_time
 
             if current_time - self.last_switch_time >= 5:
-                self.current_image = self.image_bots if self.current_image == self.image_bugs else self.image_bugs
-                current_text = self.bugs if self.current_image == self.image_bugs else self.bots
+                self.current_image = (
+                    self.image_bots
+                    if self.current_image == self.image_bugs
+                    else self.image_bugs
+                )
+                current_text = (
+                    self.bugs if self.current_image == self.image_bugs else self.bots
+                )
                 self.update_display(self.current_image, current_text)
                 self.last_switch_time = current_time
 

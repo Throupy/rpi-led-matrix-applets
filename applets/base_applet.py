@@ -11,7 +11,11 @@ class Applet:
         print(f"[LOG] [Applet: {self.name}] '{message}'")
 
     def start(self) -> None:
-        raise NotImplementedError("This method should not be implemented directly - implement within subclass")
+        raise NotImplementedError(
+            "This method should not be implemented directly - implement within subclass"
+        )
 
     def stop(self) -> None:
-        raise NotImplementedError("This method should not be implemented directly - implement within subclass")
+        raise NotImplementedError(
+            "This method should not be implemented directly - implement within subclass"
+        )

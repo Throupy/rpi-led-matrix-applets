@@ -1,4 +1,5 @@
 """Contains the code for handling the matrix display - interaction with library"""
+
 import textwrap
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 
@@ -6,14 +7,14 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 class MatrixDisplay:
     def __init__(self) -> None:
         """Initialise the MatrixDisplay"""
-        # eventually we could pass "config" object in - is it going to 
+        # eventually we could pass "config" object in - is it going to
         # change for each applet? unlikely, but possibly.
         options = RGBMatrixOptions()
         options.rows = 64
         options.cols = 64
         options.chain_length = 1
         options.parallel = 1
-        options.hardware_mapping = 'adafruit-hat'
+        options.hardware_mapping = "adafruit-hat"
         self.matrix = RGBMatrix(options=options)
         # no font specified - a default font of tom-thumb.bdf (it's nice)
         self.font = self.load_font()
