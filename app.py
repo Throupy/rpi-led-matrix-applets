@@ -3,7 +3,7 @@ from textwrap import wrap
 from matrix.matrix_display import MatrixDisplay, graphics
 from applets.helldivers_counter import HelldiversKillCounter
 from applets.tarkov_price_tracker import TarkovPriceTracker
-
+from applets.base_applet import Applet
 
 class MasterApp:
     """Master Application - will control all functionality"""
@@ -11,8 +11,10 @@ class MasterApp:
         """Initialise a new MasterApp Instance"""
         # Initialize with a dictionary of applet names to classes
         # so we don't build the app until it's selected
+        self.MAX_ITEMS_PER_PAGE = 2
         self.applets = applets
         self.current_index = 0
+        self.page_index = 0
         self.display = display
 
     def wrap_text(self, text: str, width: int) -> List[str]:
@@ -26,7 +28,15 @@ class MasterApp:
         """Display the menu system on the RGB Matrix"""
         self.display.matrix.Clear()
         y_offset = 10  # Start a bit down from the top
-        for i, applet in enumerate(self.applets.keys()):
+        start_index = self.page_index * self.MAX_ITEMS_PER_PAGE
+        end_index = start_index + self.MAX_ITEMS_PER_PAGE
+        # get applets for this current page of menu
+        current_page_applets = list(self.applets.keys())[start_index:end_index]
+
+        for i, applet in enumerate(current_page_applets):
+            # this is because first applet on second page (assuming 2 per page) would have index
+            # 0 in this loop, but 2 in the self.applets.
+            i += start_index
             color = graphics.Color(255, 0, 0) if i == self.current_index else graphics.Color(100, 100, 100)
             wrapped_text = self.wrap_text(applet, 14)  # this is width
             for line in wrapped_text:
@@ -38,9 +48,21 @@ class MasterApp:
         """Change current index, representing menu navigation"""
         # TODO: Nav system only temporary.
         if direction == "up":
-            self.current_index = (self.current_index + 1) % len(self.applets)
-        elif direction == "down":
             self.current_index = (self.current_index - 1) % len(self.applets)
+        elif direction == "down":
+            self.current_index = (self.current_index + 1) % len(self.applets)
+        elif direction == "left":
+            if self.page_index > 0:
+                self.page_index -= 1
+                self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
+        elif direction == "right":
+            if (self.page_index + 1) * self.MAX_ITEMS_PER_PAGE < len(self.applets):
+                self.page_index += 1
+                self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
+        self.page_index = self.current_index // self.MAX_ITEMS_PER_PAGE
+        print(f"Page index is current {self.page_index}")
+        print(f"Current Index is currently: {self.current_index}")
+        print(f"Selected applet is {list(self.applets.keys())[self.current_index]}")
 
     def select_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
@@ -65,15 +87,20 @@ class MasterApp:
         # TODO: This is only temporary, @Chadders you said something about a controller system?
         while True:
             self.display_menu()
-            command = input("Enter command (up, down, select, exit): ")
+            command = input("Enter command (up, down, left, right, select, exit): ")
             if command == "up":
                 self.navigate_menu("up")
             elif command == "down":
                 self.navigate_menu("down")
+            elif command == "left":
+                self.navigate_menu("left")
+            elif command == "right":
+                self.navigate_menu("right")
             elif command == "select":
                 self.select_applet()
             elif command == "exit":
                 break
+
 
 
 if __name__ == "__main__":
@@ -83,7 +110,9 @@ if __name__ == "__main__":
     # performance - app starts almost instantly.
     applets = {
         "Tarkov Price Tracker": TarkovPriceTracker,
-        "Helldivers Kill Counter": HelldiversKillCounter
+        "Helldivers Kill Counter": HelldiversKillCounter,
+        "First Applet": Applet,
+        "Second Applet": Applet
     }
     # here is our ONLY matrix display ever instantiated - will be passed through
     display = MatrixDisplay()
