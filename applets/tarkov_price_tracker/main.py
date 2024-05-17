@@ -95,13 +95,16 @@ class TarkovPriceTracker(Applet):
     def __init__(self, display: MatrixDisplay, options: Dict[str, str]) -> None:
         """Initialisation function"""
         super().__init__("Tarkov Price Tracker", display, options)
+        current_directory = os.path.dirname(os.path.realpath(__file__))
+        # assume a dir called 'resources' exists in the same dir as implementation
+        self.resources_directory = os.path.join(current_directory, "resources")
         self.item_names = options.get("item_names")
         self.items = []
         self.images = {}
 
-    def load_and_convert_image(self, image_path: str, icon_link: str) -> Image:
+    def load_and_convert_image(self, image_name: str, icon_link: str) -> Image:
         """Load image from URL and convert into displayable format, save as BMP if required"""
-        # bmp_path = image_path.replace(".png", ".bmp")
+        image_path = os.path.join(self.resources_directory, image_name)
         bmp_path = image_path.replace(".png", ".bmp")
         if os.path.exists(bmp_path):
             self.log(f"Using file from disk - {bmp_path}")
@@ -138,7 +141,7 @@ class TarkovPriceTracker(Applet):
                     # only do this if image not already loaded - only on first time
                     if display_item.name not in self.images.keys():
                         # e.g. ledx.png
-                        image_path = f"resources/images/{item_name.lower().replace(' ', '_')}.png"
+                        image_path = f"{item_name.lower().replace(' ', '_')}.png"
                         self.images[display_item.name] = self.load_and_convert_image(
                             image_path, display_item.icon_link
                         )
