@@ -168,6 +168,7 @@ class MasterApp:
         try:
             selected_applet.start()
         except KeyboardInterrupt:
+            print("KBI Detected")
             pass
         finally:
             self.display.matrix.Clear()
