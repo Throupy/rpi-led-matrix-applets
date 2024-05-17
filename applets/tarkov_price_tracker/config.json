@@ -3,5 +3,13 @@
     "description": "Displays price information of items on the Flea Market in Escape From Tarkov",
     "version": "1.0",
     "author": "Owen Throup",
-    "class_name": "TarkovPriceTracker"
+    "class_name": "TarkovPriceTracker",
+    "options": {
+        "item_names": [
+            "LEDX",
+            "Keycard",
+            "Red Rebel",
+            "Taiga"
+        ]
+    }
 }
