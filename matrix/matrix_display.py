@@ -9,13 +9,13 @@ class MatrixDisplay:
         """Initialise the MatrixDisplay"""
         # eventually we could pass "config" object in - is it going to
         # change for each applet? unlikely, but possibly.
-        options = RGBMatrixOptions()
-        options.rows = 64
-        options.cols = 64
-        options.chain_length = 1
-        options.parallel = 1
-        options.hardware_mapping = "adafruit-hat-pwm"
-        self.matrix = RGBMatrix(options=options)
+        self.options = RGBMatrixOptions()
+        self.options.rows = 64
+        self.options.cols = 64
+        self.options.chain_length = 1
+        self.options.parallel = 1
+        self.options.hardware_mapping = "adafruit-hat-pwm"
+        self.matrix = RGBMatrix(options=self.options)
         # no font specified - a default font of tom-thumb.bdf (it's nice)
         self.font = self.load_font()
 

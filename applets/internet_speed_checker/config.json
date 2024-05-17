@@ -1,0 +1,7 @@
+{
+    "name": "Internet Speed",
+    "description": "Displays your internet download and upload speed",
+    "version": "1.0",
+    "author": "Ben Chadwick",
+    "class_name": "SpeedCheck"
+}
