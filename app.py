@@ -1,13 +1,10 @@
 import os
 import sys
 import json
-
 import importlib.util
-
 from typing import Dict, List, Type
 from textwrap import wrap
 from matrix.matrix_display import MatrixDisplay, graphics
-
 from applets.base_applet import Applet
 
 
@@ -105,7 +102,6 @@ class MasterApp:
         for item in os.listdir(self.applets_root_directory):
             # os.path.join() creates a full path by joining directory and item
             full_path = os.path.join(self.applets_root_directory, item)
-
             # os.path.isdir() checks if the full path is a directory
             if os.path.isdir(full_path) and item != "__pycache__":
                 folders.append(full_path)
@@ -117,19 +113,13 @@ class MasterApp:
                 with open(config_path, "r") as file:
                     config_data = json.load(file)
                     # Extracting the desired fields
-                    name = config_data.get("name", "No Name Provided")
-                    description = config_data.get("description", "No Description Provided")
-                    version = config_data.get("version", "No Version Provided")
-                    author = config_data.get("author", "No Author Provided")
-                    class_name = config_data.get("class_name", "No Classname Provided")
-                    module_path = os.path.join(folder, "main.py")
                     applets[name] = {
-                        "description": description,
-                        "version": version,
-                        "author": author,
+                        "description": config_data.get("description", "No Description Provided"),
+                        "version": config_data.get("version", "No Version Provided"),
+                        "author": config_data.get("author", "No Author Provided"),
                         "path": folder,
-                        "class_name": class_name,
-                        "module_path": module_path,
+                        "class_name": config_data.get("class_name", "No Classname Provided"),
+                        "module_path": os.path.join(folder, "main.py"),
                     }
 
             except FileNotFoundError:
@@ -140,16 +130,7 @@ class MasterApp:
         return applets
 
     def dynamic_import_applet(self, module_path: str, module_name: str) -> Applet:
-        """
-        Dynamically import a module given its file path and module name.
-
-        Parameters:
-        module_path (str): The file path to the module.
-        module_name (str): The name of the module.
-
-        Returns:
-        module: The imported module.
-        """
+        """Dynamically import a module given its file path and module name."""
         spec = importlib.util.spec_from_file_location(module_name, module_path)
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
@@ -218,7 +199,6 @@ class MasterApp:
 
 
 if __name__ == "__main__":
-
     # Get the directory where the current script is located
     current_script_path = os.path.realpath(__file__)
     current_script_directory = os.path.dirname(current_script_path)
