@@ -92,20 +92,10 @@ def shorten_price(price: int) -> str:
 class TarkovPriceTracker(Applet):
     """TarkovPriceTracker applet definition"""
 
-    def __init__(self, display: MatrixDisplay) -> None:
+    def __init__(self, display: MatrixDisplay, options: Dict[str, str]) -> None:
         """Initialisation function"""
-        super().__init__("Tarkov Price Tracker", display)
-        self.item_names = [
-            "LEDX",
-            "Graphics Card",
-            "GP Coin",
-            "Defibrillator",
-            "Ophthalmoscope",
-            "Abandoned factory marked key",
-            "Grenade case",
-            "Crash Axe",
-            "Intelligence",
-        ]
+        super().__init__("Tarkov Price Tracker", display, options)
+        self.item_names = options.get("item_names")
         self.items = []
         self.images = {}
 

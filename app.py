@@ -117,6 +117,7 @@ class MasterApp:
                         "version": config_data.get("version", "No Version Provided"),
                         "author": config_data.get("author", "No Author Provided"),
                         "path": folder,
+                        "options": config_data.get("options", {}),
                         "class_name": config_data.get("class_name", "No Classname Provided"),
                         "module_path": os.path.join(folder, "main.py"),
                     }
@@ -150,13 +151,17 @@ class MasterApp:
         # AppletClass = self.applets[applet_name]
         module_path = self.applets[applet_name]["module_path"]
         class_name = self.applets[applet_name]["class_name"]
+        options = self.applets[applet_name]["options"]
         AppletClass = self.dynamic_import_applet(module_path, class_name)
 
         if hasattr(AppletClass, class_name):
             selected_applet_type = getattr(AppletClass, class_name)
             # Instantiate the applet's main class
             # with the required parameter 'self.display' (reference to the matrix)
-            selected_applet = selected_applet_type(self.display)
+            if options:
+                selected_applet = selected_applet_type(self.display, options)
+            else:
+                selected_applet = selected_applet_type(self.display)
         else:
             print(f"The class '{class_name}' is not found in the module '{module_path}'")
 
