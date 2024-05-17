@@ -8,7 +8,7 @@ Some small applets that are designed to run on a 64x64 LED matrix with a Raspber
 - [ ] Improve README
 - [X] Add an Applet template
 - [X] Scale between red and green for system usage
-- [ ] Tarkov applet - format price function to include millions
+- [X] Tarkov applet - format price function to include millions
 
 ## Applet Ideas:
 - [X] Internet speed test
