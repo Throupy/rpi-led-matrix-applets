@@ -6,9 +6,13 @@ from PIL import Image
 from applets.base_applet import Applet
 from matrix.matrix_display import MatrixDisplay
 
+
 class DisplayItem:
     """Represent a 64x16 row on the matrix"""
-    def __init__(self, name: str, price: int, icon_link: str, change_last_48h_percent: float) -> None:
+
+    def __init__(
+        self, name: str, price: int, icon_link: str, change_last_48h_percent: float
+    ) -> None:
         """Initialise a DisplayItem"""
         self.name = name
         self.price = price
@@ -23,12 +27,12 @@ class DisplayItem:
         items = data.get("data", {}).get("items", [])
         max_price = max(
             (offer.get("price", 0) for item in items for offer in item.get("sellFor", [])),
-            default=-1
+            default=-1,
         )
         return max_price
 
     @classmethod
-    def from_graphql(cls, data: Dict) -> Optional['DisplayItem']:
+    def from_graphql(cls, data: Dict) -> Optional["DisplayItem"]:
         """Create a DisplayItem from a GraphQL query response"""
         items = data.get("data", {}).get("items", [])
         if items:
@@ -39,8 +43,12 @@ class DisplayItem:
                 price = cls.get_highest_trader_price(data)
             icon_link = item.get("iconLink", "")
             change_last_48h_percent = item.get("changeLast48hPercent", 0)
-            return cls(name=short_name, price=price, icon_link=icon_link,
-                       change_last_48h_percent=change_last_48h_percent)
+            return cls(
+                name=short_name,
+                price=price,
+                icon_link=icon_link,
+                change_last_48h_percent=change_last_48h_percent,
+            )
         return None
 
 
@@ -48,7 +56,9 @@ def run_query(query: str) -> Dict:
     """Run a GraphQL query"""
     headers = {"Content-Type": "application/json"}
     try:
-        response = requests.post('https://api.tarkov.dev/graphql', headers=headers, json={'query': query})
+        response = requests.post(
+            "https://api.tarkov.dev/graphql", headers=headers, json={"query": query}
+        )
         response.raise_for_status()
         return response.json()
     except requests.RequestException as e:
@@ -80,12 +90,20 @@ def shorten_price(price: int) -> str:
 
 class TarkovPriceTracker(Applet):
     """TarkovPriceTracker applet definition"""
+
     def __init__(self, display: MatrixDisplay) -> None:
         """Initialisation function"""
         super().__init__("Tarkov Price Tracker", display)
         self.item_names = [
-            "LEDX", "Graphics Card", "GP Coin", "Defibrillator", "Ophthalmoscope",
-            "Abandoned factory marked key", "Grenade case", "Crash Axe", "Intelligence"
+            "LEDX",
+            "Graphics Card",
+            "GP Coin",
+            "Defibrillator",
+            "Ophthalmoscope",
+            "Abandoned factory marked key",
+            "Grenade case",
+            "Crash Axe",
+            "Intelligence",
         ]
         self.items = []
 
@@ -117,12 +135,16 @@ class TarkovPriceTracker(Applet):
         offscreen_canvas = self.display.matrix.CreateFrameCanvas()
 
         for index, item in enumerate(self.items):
-            offscreen_canvas.SetImage(images[index].convert('RGB'), 0, index * 16)
+            offscreen_canvas.SetImage(images[index].convert("RGB"), 0, index * 16)
             short_price = shorten_price(item.price)
             if item.change_last_48h_percent:
                 change_text = f"{item.change_last_48h_percent:+.1f}%"
                 text = f"{short_price} {change_text}"
-                color = graphics.Color(240, 15, 0) if item.change_last_48h_percent < 0 else graphics.Color(0, 255, 0)
+                color = (
+                    graphics.Color(240, 15, 0)
+                    if item.change_last_48h_percent < 0
+                    else graphics.Color(0, 255, 0)
+                )
             else:
                 text = f"{short_price} TRADER"
                 color = graphics.Color(0, 255, 0)
@@ -138,7 +160,7 @@ class TarkovPriceTracker(Applet):
         while True:
             self.fetch_items()
             for i in range(0, len(self.items), 4):
-                self.display_items(self.items[i:i+4])
+                self.display_items(self.items[i:i + 4])
                 time.sleep(10)  # Refresh every 10 seconds
 
     def stop(self) -> None:
