@@ -27,16 +27,58 @@ class SystemMonitor(Applet):
         }
         return stats
 
+    def get_color_from_usage(self, usage_percent: float) -> graphics.Color:
+        """Calculate colour based on usage percentage"""
+        # Usage 0 -> Green, 100 -> Red
+        green = int((100 - usage_percent) * 2.55)
+        red = int(usage_percent * 2.55)
+        return graphics.Color(red, green, 0)
+
+    def get_text_width(self, text: str) -> int:
+        """Calculate the width of the text in pixels"""
+        return graphics.DrawText(
+            self.display.offscreen_canvas,
+            self.display.font,
+            0,
+            0,
+            graphics.Color(0, 0, 0),
+            text,
+        )
+
     def display_stats(self, stats: Dict[str, str]) -> None:
         """Display system statistics on the matrix"""
         self.display.matrix.Clear()
         y_offset = 10  # lil bit down from the top
-        colour = graphics.Color(200, 200, 200)
+        label_colour = graphics.Color(200, 200, 200)
+
+        # Find longest key - display values inline with the end of longest line
+        longest_key = max(stats.keys(), key=len)
+        key_offset = self.get_text_width(longest_key) + 5  # Add 5 padding
 
         for stat_name, stat_value in stats.items():
-            text = f" {stat_name}:{stat_value}"
+            if "%" in stat_value:
+                cpu_percent = float(stat_value.strip("%"))
+                value_color = self.get_color_from_usage(cpu_percent)
+            else:
+                value_color = graphics.Color(120, 120, 120)
+
+            # draw stat name
             graphics.DrawText(
-                self.display.offscreen_canvas, self.display.font, 1, y_offset, colour, text
+                self.display.offscreen_canvas,
+                self.display.font,
+                1,
+                y_offset,
+                label_colour,
+                stat_name,
+            )
+            # draw stat value
+            graphics.DrawText(
+                self.display.offscreen_canvas,
+                self.display.font,
+                key_offset,
+                y_offset,
+                value_color,
+                stat_value,
             )
             y_offset += 10  # line height
 
