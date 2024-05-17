@@ -49,7 +49,7 @@ class MasterApp:
                 if i == self.current_index
                 else graphics.Color(100, 100, 100)
             )
-            wrapped_text = self.wrap_text(applet, 14)  # this is width
+            wrapped_text = self.wrap_text(applet, 12)  # this is width
             for line in wrapped_text:
                 graphics.DrawText(self.display.matrix, self.display.font, 1, y_offset, color, line)
                 y_offset += 10  # this is for line height
