@@ -1,20 +1,27 @@
+import os
+import sys
+import json
+
+import importlib.util
+
 from typing import Dict, List, Type
 from textwrap import wrap
 from matrix.matrix_display import MatrixDisplay, graphics
-from applets.helldivers_counter import HelldiversKillCounter
-from applets.tarkov_price_tracker import TarkovPriceTracker
+
 from applets.base_applet import Applet
 
 
 class MasterApp:
     """Master Application - will control all functionality"""
 
-    def __init__(self, applets: Dict[str, Type], display: MatrixDisplay) -> None:
+    def __init__(self, display: MatrixDisplay, applets_root_directory: str) -> None:
         """Initialise a new MasterApp Instance"""
         # Initialize with a dictionary of applet names to classes
         # so we don't build the app until it's selected
+        self.applets_root_directory = applets_root_directory
         self.MAX_ITEMS_PER_PAGE = 2
-        self.applets = applets
+        self.applets = self.get_applets_information()
+        print(self.applets)
         self.current_index = 0
         self.page_index = 0
         self.display = display
@@ -87,15 +94,97 @@ class MasterApp:
                 self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
         self.page_index = self.current_index // self.MAX_ITEMS_PER_PAGE
 
+    def get_applets_information(self) -> Dict[str, Dict]:
+        """Retrieve information about applets from the config file in each applet's directory"""
+        # List to hold the names of folders
+        folders = []
+        # List of found applets and their information found in the config.json file
+        applets = {}
+
+        # os.listdir() returns a list of all files and folders in the specified directory
+        for item in os.listdir(self.applets_root_directory):
+            # os.path.join() creates a full path by joining directory and item
+            full_path = os.path.join(self.applets_root_directory, item)
+
+            # os.path.isdir() checks if the full path is a directory
+            if os.path.isdir(full_path) and item != "__pycache__":
+                folders.append(full_path)
+
+        for folder in folders:
+            config_path = os.path.join(folder, "config.json")
+            # print(config_path)
+            try:
+                with open(config_path, "r") as file:
+                    config_data = json.load(file)
+                    # Extracting the desired fields
+                    name = config_data.get("name", "No Name Provided")
+                    description = config_data.get("description", "No Description Provided")
+                    version = config_data.get("version", "No Version Provided")
+                    author = config_data.get("author", "No Author Provided")
+                    class_name = config_data.get("class_name", "No Classname Provided")
+                    module_path = os.path.join(folder, "main.py")
+                    applets[name] = {
+                        "description": description,
+                        "version": version,
+                        "author": author,
+                        "path": folder,
+                        "class_name": class_name,
+                        "module_path": module_path,
+                    }
+
+            except FileNotFoundError:
+                print(f"Config file not found in {folder}")
+            except json.JSONDecodeError:
+                print(f"Error decoding JSON in {folder}")
+
+        return applets
+
+    def dynamic_import_applet(self, module_path: str, module_name: str) -> Applet:
+        """
+        Dynamically import a module given its file path and module name.
+
+        Parameters:
+        module_path (str): The file path to the module.
+        module_name (str): The name of the module.
+
+        Returns:
+        module: The imported module.
+        """
+        spec = importlib.util.spec_from_file_location(module_name, module_path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+
+        return module
+
     def select_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
         self.display.matrix.Clear()
         applet_name = list(self.applets.keys())[self.current_index]
+        print(f"applet_name: {applet_name}")
         self.display.show_message(f"Loading {applet_name}...", "loading")
 
+        # Dynamically import selected applet
+
+        selected_applet = None
         # Instantiate the selected applet
-        AppletClass = self.applets[applet_name]
-        selected_applet = AppletClass(self.display)
+        # AppletClass = self.applets[applet_name]
+        module_path = self.applets[applet_name]["module_path"]
+        class_name = self.applets[applet_name]["class_name"]
+        print(f"Module Path: {module_path}")
+        print(f"Class Name: {class_name}")
+
+        AppletClass = self.dynamic_import_applet(module_path, class_name)
+        print(f"AppletClass: {AppletClass}")
+
+        if hasattr(AppletClass, class_name):
+            selected_applet_type = getattr(AppletClass, class_name)
+            # Instantiate the applet's main class
+            # with the required parameter 'self.display' (reference to the matrix)
+            selected_applet = selected_applet_type(self.display)
+            print(selected_applet)
+        else:
+            print(f"The class '{class_name}' is not found in the module '{module_path}'")
 
         # This try, except, finally block allows us to
         # CTRL+C out of the applet and return to the menu.
@@ -109,6 +198,8 @@ class MasterApp:
     def run(self) -> None:
         """Run the master application"""
         # TODO: This is only temporary, @Chadders you said something about a controller system?
+        # DONE: Add directory based applets with separate config files, and dynamic applet importing
+        self.get_applets_information()
         while True:
             self.display_menu()
             command = input("Enter command (up, down, left, right, select, exit): ")
@@ -127,18 +218,19 @@ class MasterApp:
 
 
 if __name__ == "__main__":
-    # Going to pass this into the MasterApp
-    # this means nothing gets instantiated until we select it
-    # inside MasterApp.select_applet(). This is very good for
-    # performance - app starts almost instantly.
-    applets = {
-        "Tarkov Price Tracker": TarkovPriceTracker,
-        "Helldivers Kill Counter": HelldiversKillCounter,
-        "First Applet": Applet,
-        "Second Applet": Applet,
-    }
+
+    # Get the directory where the current script is located
+    current_script_path = os.path.realpath(__file__)
+    current_script_directory = os.path.dirname(current_script_path)
+
+    # Define the target subdirectory (change this if you have a differently named applets directory)
+    applets_subdirectory = "applets"
+
+    # Construct the full path to the target subdirectory
+    applets_root_directory = os.path.join(current_script_directory, applets_subdirectory)
+
     # here is our ONLY matrix display ever instantiated - will be passed through
     display = MatrixDisplay()
     display.show_message("Building Menu System...", "loading")
-    master_app = MasterApp(applets, display)
+    master_app = MasterApp(display, applets_root_directory)
     master_app.run()
