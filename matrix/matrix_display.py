@@ -18,6 +18,7 @@ class MatrixDisplay:
         self.matrix = RGBMatrix(options=options)
         # no font specified - a default font of tom-thumb.bdf (it's nice)
         self.font = self.load_font()
+        self.offscreen_canvas = self.matrix.CreateFrameCanvas()
 
     def load_font(self, font_name: str = "tom-thumb.bdf") -> graphics.Font:
         """Load a font, given the font name"""
@@ -28,7 +29,6 @@ class MatrixDisplay:
     def show_message(self, message: str = "Loading...", message_type: str = "loading") -> None:
         """Show a message of a given type e.g. error"""
         self.matrix.Clear()
-        offscreen_canvas = self.matrix.CreateFrameCanvas()
 
         # Determine color based on message_type
         if message_type == "error":
@@ -46,9 +46,9 @@ class MatrixDisplay:
 
         # Draw each line of text
         for line in wrapped_text:
-            text_length = graphics.DrawText(offscreen_canvas, self.font, 0, 0, color, line)
+            text_length = graphics.DrawText(self.offscreen_canvas, self.font, 0, 0, color, line)
             text_x = (self.matrix.width - text_length) // 2
-            graphics.DrawText(offscreen_canvas, self.font, text_x, text_y, color, line)
+            graphics.DrawText(self.offscreen_canvas, self.font, text_x, text_y, color, line)
             text_y += line_height
 
-        self.matrix.SwapOnVSync(offscreen_canvas)
+        self.matrix.SwapOnVSync(self.offscreen_canvas)

@@ -137,6 +137,7 @@ class TarkovPriceTracker(Applet):
     def fetch_items(self) -> None:
         """Fetch all the selected items' information from the API"""
         self.log("Fetching items from the Tarkov API")
+        self.items = []
         for item_name in self.item_names:
             query = generate_query(item_name)
             try:
@@ -144,11 +145,13 @@ class TarkovPriceTracker(Applet):
                 display_item = DisplayItem.from_graphql(result)
                 if display_item:
                     self.items.append(display_item)
-                    # e.g. ledx.png
-                    image_path = f"resources/images/{item_name.lower().replace(' ', '_')}.png"
-                    self.images[display_item.name] = self.load_and_convert_image(
-                        image_path, display_item.icon_link
-                    )
+                    # only do this if image not already loaded - only on first time
+                    if display_item.name not in self.images.keys():
+                        # e.g. ledx.png
+                        image_path = f"resources/images/{item_name.lower().replace(' ', '_')}.png"
+                        self.images[display_item.name] = self.load_and_convert_image(
+                            image_path, display_item.icon_link
+                        )
                 else:
                     self.log(f"No item found for {item_name}.")
             except Exception as e:
@@ -157,12 +160,10 @@ class TarkovPriceTracker(Applet):
     def display_items(self, items: List[DisplayItem]) -> None:
         """Display the selected items onto the matrix"""
         font = self.display.font
-
-        offscreen_canvas = self.display.matrix.CreateFrameCanvas()
-
+        self.display.matrix.Clear()
         for index, item in enumerate(items):
             image = self.images[item.name]
-            offscreen_canvas.SetImage(image.convert("RGB"), 0, index * 16)
+            self.display.offscreen_canvas.SetImage(image.convert("RGB"), 0, index * 16)
             short_price = shorten_price(item.price)
             if item.change_last_48h_percent:
                 change_text = f"{item.change_last_48h_percent:+.1f}%"
@@ -176,10 +177,14 @@ class TarkovPriceTracker(Applet):
                 text = f"{short_price} TRADER"
                 color = graphics.Color(0, 255, 0)
 
-            graphics.DrawText(offscreen_canvas, font, 18, (index * 16) + 12, color, text)
+            graphics.DrawText(
+                self.display.offscreen_canvas, font, 18, (index * 16) + 12, color, text
+            )
 
-        offscreen_canvas = self.display.matrix.SwapOnVSync(offscreen_canvas)
-        time.sleep(3)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+            self.display.offscreen_canvas
+        )
+        time.sleep(2)
 
     def start(self) -> None:
         """Start the applet"""
@@ -188,7 +193,7 @@ class TarkovPriceTracker(Applet):
             self.fetch_items()
             for i in range(0, len(self.items), 4):
                 self.display_items(self.items[i : i + 4])
-                time.sleep(10)  # Refresh every 10 seconds
+                time.sleep(4)  # Refresh every 4 (+ 2) = 6 seconds
 
     def stop(self) -> None:
         """Stop the applet"""
