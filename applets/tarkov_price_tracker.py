@@ -19,7 +19,7 @@ class DisplayItem:
     def get_highest_trader_price(data: Dict) -> int:
         """Get the highest price offered by a trader for a given item"""
         item_name = data.get("data", {}).get("items", [])[0].get("shortName")
-        print(f"No flea market data for {item_name}, going with highest trader price")
+        self.log(f"No flea market data for {item_name}, going with highest trader price")
         items = data.get("data", {}).get("items", [])
         max_price = max(
             (offer.get("price", 0) for item in items for offer in item.get("sellFor", [])),
@@ -100,9 +100,9 @@ class TarkovPriceTracker(Applet):
                 if display_item:
                     self.items.append(display_item)
                 else:
-                    print(f"No item found for {item_name}.")
+                    self.log(f"No item found for {item_name}.")
             except Exception as e:
-                print(f"Error retrieving data for {item_name}: {e}")
+                self.log(f"Error retrieving data for {item_name}: {e}")
 
     def display_items(self, item: List[DisplayItem]) -> None:
         """Display the selected items onto the matrix"""

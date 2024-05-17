@@ -73,9 +73,6 @@ class MasterApp:
                 self.page_index += 1
                 self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
         self.page_index = self.current_index // self.MAX_ITEMS_PER_PAGE
-        print(f"Page index is current {self.page_index}")
-        print(f"Current Index is currently: {self.current_index}")
-        print(f"Selected applet is {list(self.applets.keys())[self.current_index]}")
 
     def select_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
