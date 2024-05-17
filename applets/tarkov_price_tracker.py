@@ -93,7 +93,9 @@ class TarkovPriceTracker(Applet):
 
     def __init__(self, display: MatrixDisplay) -> None:
         """Initialisation function"""
+        print("init")
         super().__init__("Tarkov Price Tracker", display)
+        print("creating item naemes")
         self.item_names = [
             "LEDX",
             "Graphics Card",
@@ -158,9 +160,12 @@ class TarkovPriceTracker(Applet):
         """Start the applet"""
         self.log("Starting")
         while True:
+            print("inside while true - calling fetch")
             self.fetch_items()
+            print("starting for loop")
             for i in range(0, len(self.items), 4):
-                self.display_items(self.items[i:i + 4])
+                print("inside for loop - displaying items")
+                self.display_items(self.items[i : i + 4])
                 time.sleep(10)  # Refresh every 10 seconds
 
     def stop(self) -> None:

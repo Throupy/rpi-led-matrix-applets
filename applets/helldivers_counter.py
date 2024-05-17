@@ -1,4 +1,5 @@
 import time
+import os
 import requests
 import json
 from typing import Tuple, Optional
@@ -24,27 +25,32 @@ class HelldiversKillCounter(Applet):
 
     def load_and_convert_image(self, image_path: str) -> Image:
         """Load an image from a filepath and convert it into a displayable format"""
-        image = Image.open(image_path)
-        image = image.convert("RGBA")
-        data = image.getdata()
+        bmp_path = image_path.replace(".png", ".bmp")
+        if os.path.exists(bmp_path):
+            image = Image.open(bmp_path)
+        else:
+            image = Image.open(image_path)
+            image = image.convert("RGBA")
+            data = image.getdata()
 
-        new_data = []
-        for item in data:
-            # this conditional is horrific - surely a better way to do this..
-            if (
-                item[0] in list(range(200, 256))
-                and item[1] in list(range(200, 256))
-                and item[2] in list(range(200, 256))
-            ):
-                if "bugs" in image_path:
-                    new_data.append((255, 165, 0, item[3]))  # orange
-                elif "bots" in image_path:
-                    new_data.append((255, 30, 0, item[3]))  # red
-            else:
-                new_data.append(item)
+            new_data = []
+            for item in data:
+                # this conditional is horrific - surely a better way to do this..
+                if (
+                    item[0] in list(range(200, 256))
+                    and item[1] in list(range(200, 256))
+                    and item[2] in list(range(200, 256))
+                ):
+                    if "bugs" in image_path:
+                        new_data.append((255, 165, 0, item[3]))  # orange
+                    elif "bots" in image_path:
+                        new_data.append((255, 30, 0, item[3]))  # red
+                else:
+                    new_data.append(item)
 
-        image.putdata(new_data)
-        image = image.resize((32, 32))
+            image.putdata(new_data)
+            image = image.resize((32, 32))
+            image.save(bmp_path)
         return image
 
     def fetch_data(self) -> Tuple[Optional[str], Optional[str]]:
@@ -95,22 +101,20 @@ class HelldiversKillCounter(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
+        # Initial values
+        current_text = self.bugs if self.current_image == self.image_bugs else self.bots
+        self.update_display(self.current_image, current_text)
         while True:
             current_time = time.time()
-
             if current_time - self.last_fetch_time >= 10:
                 self.bugs, self.bots = self.fetch_data()
                 self.last_fetch_time = current_time
 
             if current_time - self.last_switch_time >= 5:
                 self.current_image = (
-                    self.image_bots
-                    if self.current_image == self.image_bugs
-                    else self.image_bugs
+                    self.image_bots if self.current_image == self.image_bugs else self.image_bugs
                 )
-                current_text = (
-                    self.bugs if self.current_image == self.image_bugs else self.bots
-                )
+                current_text = self.bugs if self.current_image == self.image_bugs else self.bots
                 self.update_display(self.current_image, current_text)
                 self.last_switch_time = current_time
 
