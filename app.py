@@ -1,7 +1,4 @@
 import os
-import psutil
-import time
-import threading
 import sys
 import json
 import importlib.util
@@ -168,7 +165,6 @@ class MasterApp:
         try:
             selected_applet.start()
         except KeyboardInterrupt:
-            print("KBI Detected")
             pass
         finally:
             self.display.matrix.Clear()
