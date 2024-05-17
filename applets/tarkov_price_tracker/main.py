@@ -86,7 +86,12 @@ def generate_query(item_name: str) -> str:
 
 def shorten_price(price: int) -> str:
     """Format prices, turning thousands into 'k'"""
-    return f"{round(price / 1000)}k" if price >= 1000 else str(price)
+    if price >= 1000000:
+        return f"{round(price / 1000000, 1)}M"
+    elif price >= 1000:
+        return f"{round(price / 1000)}k"
+    else:
+        return str(price)
 
 
 class TarkovPriceTracker(Applet):
