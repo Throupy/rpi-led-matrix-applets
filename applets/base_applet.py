@@ -1,3 +1,4 @@
+import os
 from typing import Dict
 from matrix.matrix_display import MatrixDisplay
 

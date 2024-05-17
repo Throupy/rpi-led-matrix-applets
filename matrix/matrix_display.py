@@ -23,7 +23,7 @@ class MatrixDisplay:
     def load_font(self, font_name: str = "tom-thumb.bdf") -> graphics.Font:
         """Load a font, given the font name"""
         font = graphics.Font()
-        font.LoadFont(f"resources/bdf/{font_name}")
+        font.LoadFont(f"matrix/fonts/{font_name}")
         return font
 
     def show_message(self, message: str = "Loading...", message_type: str = "loading") -> None:

@@ -14,8 +14,12 @@ class HelldiversKillCounter(Applet):
     def __init__(self, display: MatrixDisplay) -> None:
         """Initialisation function"""
         super().__init__("Helldivers Kill Counter", display)
-        self.image_bugs = self.load_and_convert_image("resources/images/bugs.png")
-        self.image_bots = self.load_and_convert_image("resources/images/bots.png")
+        # Get resource file
+        current_directory = os.path.dirname(os.path.realpath(__file__))
+        # assume a dir called 'resources' exists in the same dir as implementation
+        self.resources_directory = os.path.join(current_directory, "resources")
+        self.image_bugs = self.load_and_convert_image("bugs.png")
+        self.image_bots = self.load_and_convert_image("bots.png")
         # start displaying terminid kill count
         self.current_image = self.image_bugs
         self.last_switch_time = time.time()
@@ -23,8 +27,9 @@ class HelldiversKillCounter(Applet):
         # fetch initial values at build time
         self.bugs, self.bots = self.fetch_data()
 
-    def load_and_convert_image(self, image_path: str) -> Image:
+    def load_and_convert_image(self, image_name: str) -> Image:
         """Load an image from a filepath and convert it into a displayable format"""
+        image_path = os.path.join(self.resources_directory, image_name)
         bmp_path = image_path.replace(".png", ".bmp")
         if os.path.exists(bmp_path):
             image = Image.open(bmp_path)
@@ -50,7 +55,11 @@ class HelldiversKillCounter(Applet):
 
             image.putdata(new_data)
             image = image.resize((32, 32))
-            image.save(bmp_path)
+            try:
+                image.save(bmp_path)
+            except PermissionError:
+                print(f"Permission denied: Unable to save to {bmp_path}. Check file permissions and try again")
+                raise
         return image
 
     def fetch_data(self) -> Tuple[Optional[str], Optional[str]]:
