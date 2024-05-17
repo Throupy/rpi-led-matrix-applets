@@ -1,0 +1,10 @@
+{
+    "name": "Template Applet",
+    "description": "Some amazing stuff and things extremely well!",
+    "version": "1.0",
+    "author": "Joe Bloggs",
+    "class_name": "TemplateApplet",
+    "options": {
+        "example_option": "example_value"
+    }
+}

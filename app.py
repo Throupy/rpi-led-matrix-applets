@@ -102,7 +102,8 @@ class MasterApp:
             # os.path.join() creates a full path by joining directory and item
             full_path = os.path.join(self.applets_root_directory, item)
             # os.path.isdir() checks if the full path is a directory
-            if os.path.isdir(full_path) and item != "__pycache__":
+            # don't try to add the template applet!!!
+            if os.path.isdir(full_path) and item not in ["__pycache__", "template_applet"]:
                 folders.append(full_path)
 
         for folder in folders:
