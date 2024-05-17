@@ -18,7 +18,6 @@ class MasterApp:
         self.applets_root_directory = applets_root_directory
         self.MAX_ITEMS_PER_PAGE = 2
         self.applets = self.get_applets_information()
-        print(self.applets)
         self.current_index = 0
         self.page_index = 0
         self.display = display
@@ -108,18 +107,17 @@ class MasterApp:
 
         for folder in folders:
             config_path = os.path.join(folder, "config.json")
-            # print(config_path)
             try:
                 with open(config_path, "r") as file:
                     config_data = json.load(file)
-                    name = config_data.get("class_name", "No Classname Provided")
+                    name = config_data.get("name", "No Name Provided")
                     # Extracting the desired fields
                     applets[name] = {
                         "description": config_data.get("description", "No Description Provided"),
                         "version": config_data.get("version", "No Version Provided"),
                         "author": config_data.get("author", "No Author Provided"),
                         "path": folder,
-                        "class_name": name,
+                        "class_name": config_data.get("class_name", "No Classname Provided"),
                         "module_path": os.path.join(folder, "main.py"),
                     }
 
@@ -143,7 +141,6 @@ class MasterApp:
         """Select and build (instantiate) the selected applet"""
         self.display.matrix.Clear()
         applet_name = list(self.applets.keys())[self.current_index]
-        print(f"applet_name: {applet_name}")
         self.display.show_message(f"Loading {applet_name}...", "loading")
 
         # Dynamically import selected applet
@@ -153,18 +150,13 @@ class MasterApp:
         # AppletClass = self.applets[applet_name]
         module_path = self.applets[applet_name]["module_path"]
         class_name = self.applets[applet_name]["class_name"]
-        print(f"Module Path: {module_path}")
-        print(f"Class Name: {class_name}")
-
         AppletClass = self.dynamic_import_applet(module_path, class_name)
-        print(f"AppletClass: {AppletClass}")
 
         if hasattr(AppletClass, class_name):
             selected_applet_type = getattr(AppletClass, class_name)
             # Instantiate the applet's main class
             # with the required parameter 'self.display' (reference to the matrix)
             selected_applet = selected_applet_type(self.display)
-            print(selected_applet)
         else:
             print(f"The class '{class_name}' is not found in the module '{module_path}'")
 
