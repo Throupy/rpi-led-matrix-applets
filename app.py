@@ -106,6 +106,10 @@ class MasterApp:
             if os.path.isdir(full_path) and item not in ["__pycache__", "template_applet"]:
                 folders.append(full_path)
 
+        # For now, sort alphabetically. This controls the order at which
+        # the applets are loaded (and displayed) onto the menu.
+        folders.sort()
+
         for folder in folders:
             config_path = os.path.join(folder, "config.json")
             try:
