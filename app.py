@@ -44,6 +44,19 @@ class MasterApp:
                 y_offset += 10  # this is for line height
             y_offset += 5  # Additional spacing between applets
 
+        # dislplay current page and total pages e.g. [1/2] at the bottom of the matrix
+        total_pages = (len(self.applets) + self.MAX_ITEMS_PER_PAGE - 1) // self.MAX_ITEMS_PER_PAGE
+        page_indicator_text = f"[{self.page_index + 1}/{total_pages}]"
+        indicator_color = graphics.Color(100, 100, 100)
+        text_length = graphics.DrawText(
+            self.display.matrix, self.display.font, 0, 0, indicator_color, page_indicator_text
+        )
+        text_x = (self.display.matrix.width - text_length) // 2
+        text_y = self.display.matrix.height - 4  # near the bottom
+        graphics.DrawText(
+            self.display.matrix, self.display.font, text_x, text_y, indicator_color, page_indicator_text
+        )
+
     def navigate_menu(self, direction: str) -> None:
         """Change current index, representing menu navigation"""
         # TODO: Nav system only temporary.
