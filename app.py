@@ -24,6 +24,8 @@ class MasterApp:
         wrapped_lines = wrap(text, width)
         if wrapped_lines:
             wrapped_lines[0] = f"* {wrapped_lines[0]}"
+            for i in range(1, len(wrapped_lines)):
+                wrapped_lines[i] = f"  {wrapped_lines[i]}"
         return wrapped_lines
 
     def display_menu(self) -> None:
