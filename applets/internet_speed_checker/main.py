@@ -53,6 +53,15 @@ class SpeedCheck(Applet):
                         start_time = time.time()
                         bytes_downloaded = 0
 
+    def get_speed_color(self, speed: float) -> graphics.Color:
+        """Calculate color based on download speed"""
+        # red - 0, green - 50, green - 50+
+        if speed > 50:
+            return graphics.Color(0, 255, 0)
+        red = int((50 - speed) * 2.55)
+        green = int(speed * 2.55)
+        return graphics.Color(red, green, 0)
+
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
@@ -69,21 +78,19 @@ class SpeedCheck(Applet):
         self.download_thread.start()
 
         self.display.matrix.Clear()
-        font = self.display.font
-        color = graphics.Color(240, 15, 0)
 
         while self.test_running:
-
-            text = f"{(self.download_speed / (1024 * 1024)) * 8:.2f} Mb/s"
-
+            speed_mbps = (self.download_speed / (1024 * 1024)) * 8
+            text = f"{speed_mbps:.2f} Mb/s"
             self.display.offscreen_canvas.Clear()
-
+            # get colour based on speed
+            colour = self.get_speed_color(speed_mbps)
             text_width = graphics.DrawText(
                 self.display.matrix,
                 self.display.font,
                 0,
                 0,
-                graphics.Color(255, 255, 255),
+                graphics.Color(200, 200, 200),
                 text,
             )
 
@@ -95,7 +102,7 @@ class SpeedCheck(Applet):
                 self.display.font,
                 text_x,
                 text_y,
-                graphics.Color(255, 255, 255),
+                colour,
                 text,
             )
 
