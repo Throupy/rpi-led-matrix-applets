@@ -112,13 +112,14 @@ class MasterApp:
             try:
                 with open(config_path, "r") as file:
                     config_data = json.load(file)
+                    name = config_data.get("class_name", "No Classname Provided")
                     # Extracting the desired fields
                     applets[name] = {
                         "description": config_data.get("description", "No Description Provided"),
                         "version": config_data.get("version", "No Version Provided"),
                         "author": config_data.get("author", "No Author Provided"),
                         "path": folder,
-                        "class_name": config_data.get("class_name", "No Classname Provided"),
+                        "class_name": name,
                         "module_path": os.path.join(folder, "main.py"),
                     }
 
