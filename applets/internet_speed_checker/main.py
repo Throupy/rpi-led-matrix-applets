@@ -32,11 +32,11 @@ class SpeedCheck(Applet):
 
     def signal_handler(self, sig, frame):
         """Handle SIGINT (CTRL+C) for graceful shutdown"""
-        self.log("Caught SIGINT, stopping applet...")
-        self.stop()
+        self.log("Caught SIGINT, stopping applet gracefully (terminating threads)...")
         raise KeyboardInterrupt
 
     def download_file(self):
+        """Download the given file and calculate the download speed"""
         start_time = time.time()
         bytes_downloaded = 0
 
@@ -80,10 +80,11 @@ class SpeedCheck(Applet):
         self.display.matrix.Clear()
 
         while self.test_running:
+            # Calculate speed in megabits per second
             speed_mbps = (self.download_speed / (1024 * 1024)) * 8
             text = f"{speed_mbps:.2f} Mb/s"
             self.display.offscreen_canvas.Clear()
-            # get colour based on speed
+            # Calculate colour based on speed
             colour = self.get_speed_color(speed_mbps)
             text_width = graphics.DrawText(
                 self.display.matrix,
