@@ -108,6 +108,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [ ] Into README add start() definition
 - [ ] Tarkov app takes long time to quit when B button pressed
 - [ ] Xbox Controller - support debouce (stop joystick movement causing multiple events)
+- [ ] APIs - display error message if cannot get data for API for some reason e.g. no network connection
 
 ## Applet Ideas:
 - [X] Internet speed test
