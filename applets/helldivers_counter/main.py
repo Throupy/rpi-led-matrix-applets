@@ -1,3 +1,4 @@
+"""Hell divers kill counter applet implementation"""
 import time
 import os
 import requests
@@ -58,7 +59,7 @@ class HelldiversKillCounter(Applet):
             try:
                 image.save(bmp_path)
             except PermissionError:
-                print(f"Permission denied: Unable to save to {bmp_path}. Check file permissions and try again")
+                print(f"Permission denied: Unable to save to {bmp_path}. Check perms and retry")
                 raise
         return image
 
