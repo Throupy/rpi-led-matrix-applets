@@ -176,7 +176,6 @@ class MasterApp:
             selected_applet.start()
         except KeyboardInterrupt:
             selected_applet.stop()
-            pass
         finally:
             self.display.matrix.Clear()
 
