@@ -1,15 +1,13 @@
 """Base applet definition"""
 
-from typing import Dict
-from matrix.matrix_display import MatrixDisplay
-
 
 class Applet:
     """Base applet from which all others will inherit"""
-    def __init__(self, name: str, display: MatrixDisplay, options: Dict[str, str] = None) -> None:
+    def __init__(self, name: str, **kwargs) -> None:
         self.name = name
-        self.display = display
-        self.options = options
+        self.display = kwargs.get("display", None)
+        self.options = kwargs.get("options", None)
+        self.input_handler = kwargs.get("input_handler", None)
 
     def log(self, message: str) -> None:
         """Display an identifiable logging message"""

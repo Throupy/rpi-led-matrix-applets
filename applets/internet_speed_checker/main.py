@@ -1,21 +1,17 @@
 import urllib.request
 import time
 import threading
-from typing import List, Dict, Optional
 from rgbmatrix import graphics
-from PIL import Image
 from applets.base_applet import Applet
-from matrix.matrix_display import MatrixDisplay
 import signal
-import sys
 
 
 class SpeedCheck(Applet):
     """SpeedCheck applet definition"""
 
-    def __init__(self, display: MatrixDisplay) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         """Initialisation function"""
-        super().__init__("Internet Speed", display)
+        super().__init__("Internet Speed", *args, **kwargs)
 
         self.test_running = False  # Initialize to False
         # URL to download test file (choose a file that is reasonably sized for the test)
@@ -30,7 +26,7 @@ class SpeedCheck(Applet):
         # Placeholder for the original signal handler
         self.original_signal_handler = None
 
-    def signal_handler(self, sig, frame):
+    def signal_handler(self):
         """Handle SIGINT (CTRL+C) for graceful shutdown"""
         self.log("Caught SIGINT, stopping applet gracefully (terminating threads)...")
         raise KeyboardInterrupt
@@ -53,7 +49,8 @@ class SpeedCheck(Applet):
                         start_time = time.time()
                         bytes_downloaded = 0
 
-    def get_speed_color(self, speed: float) -> graphics.Color:
+    @staticmethod
+    def get_speed_color(speed: float) -> graphics.Color:
         """Calculate color based on download speed"""
         # red - 0, green - 50, green - 50+
         if speed > 50:
@@ -79,7 +76,7 @@ class SpeedCheck(Applet):
 
         self.display.matrix.Clear()
 
-        while self.test_running:
+        while self.test_running and not self.input_handler.exit_requested:
             # Calculate speed in megabits per second
             speed_mbps = (self.download_speed / (1024 * 1024)) * 8
             text = f"{speed_mbps:.2f} Mb/s"

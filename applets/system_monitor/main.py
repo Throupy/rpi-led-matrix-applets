@@ -1,22 +1,19 @@
 import time
-import os
-import requests
-import json
 import psutil
-from typing import Tuple, Optional, Dict
-from PIL import Image
-from matrix.matrix_display import MatrixDisplay, graphics
+from typing import Dict
+from matrix.matrix_display import graphics
 from applets.base_applet import Applet
 
 
 class SystemMonitor(Applet):
     """System Monitor Applet Definition"""
 
-    def __init__(self, display: MatrixDisplay) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         """Initialisation function"""
-        super().__init__("System Monitor", display)
+        super().__init__("System Monitor", *args, **kwargs)
 
-    def fetch_stats(self) -> Dict[str, str]:
+    @staticmethod
+    def fetch_stats() -> Dict[str, str]:
         """Fetch various system statistics"""
         stats = {
             "CPU": f"{psutil.cpu_percent()}%",
@@ -27,7 +24,8 @@ class SystemMonitor(Applet):
         }
         return stats
 
-    def get_color_from_usage(self, usage_percent: float) -> graphics.Color:
+    @staticmethod
+    def get_color_from_usage(usage_percent: float) -> graphics.Color:
         """Calculate colour based on usage percentage"""
         # Usage 0 -> Green, 100 -> Red
         green = int((100 - usage_percent) * 2.55)
@@ -88,7 +86,7 @@ class SystemMonitor(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        while True:
+        while not self.input_handler.exit_requested:
             stats = self.fetch_stats()
             self.display_stats(stats)
 

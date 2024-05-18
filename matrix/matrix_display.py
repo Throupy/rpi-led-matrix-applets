@@ -15,9 +15,9 @@ class MatrixDisplay:
         options.chain_length = 1
         options.parallel = 1
         options.hardware_mapping = "adafruit-hat-pwm"
+        self.load_font()
         self.matrix = RGBMatrix(options=options)
         # no font specified - a default font of tom-thumb.bdf (it's nice)
-        self.font = self.load_font()
         self.offscreen_canvas = self.matrix.CreateFrameCanvas()
 
         # Define some preset colors
@@ -41,9 +41,10 @@ class MatrixDisplay:
         """Load a font, given the font name"""
         font = graphics.Font()
         font.LoadFont(f"matrix/fonts/{font_name}")
-        return font
+        self.font = font
 
-    def _get_text_width(self, font: graphics.Font, text: str) -> int:
+    @staticmethod
+    def _get_text_width(font: graphics.Font, text: str) -> int:
         """Calculate pixel width of given string.
         This is currently not utilised but may be used later on so leaving it in for now"""
         width = 0

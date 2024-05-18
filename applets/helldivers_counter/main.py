@@ -5,16 +5,16 @@ import requests
 import json
 from typing import Tuple, Optional
 from PIL import Image
-from matrix.matrix_display import MatrixDisplay, graphics
+from matrix.matrix_display import graphics
 from applets.base_applet import Applet
 
 
 class HelldiversKillCounter(Applet):
     """Helldivers Kill Counter Definition"""
 
-    def __init__(self, display: MatrixDisplay) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         """Initialisation function"""
-        super().__init__("Helldivers Kill Counter", display)
+        super().__init__("Helldivers Kill Counter", *args, **kwargs)
         # Get resource file
         current_directory = os.path.dirname(os.path.realpath(__file__))
         # assume a dir called 'resources' exists in the same dir as implementation
@@ -114,7 +114,7 @@ class HelldiversKillCounter(Applet):
         # Initial values
         current_text = self.bugs if self.current_image == self.image_bugs else self.bots
         self.update_display(self.current_image, current_text)
-        while True:
+        while not self.input_handler.exit_requested:
             current_time = time.time()
             if current_time - self.last_fetch_time >= 10:
                 self.bugs, self.bots = self.fetch_data()

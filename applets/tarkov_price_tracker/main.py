@@ -5,7 +5,6 @@ from typing import List, Dict, Optional
 from rgbmatrix import graphics
 from PIL import Image
 from applets.base_applet import Applet
-from matrix.matrix_display import MatrixDisplay
 
 
 class DisplayItem:
@@ -24,7 +23,6 @@ class DisplayItem:
     def get_highest_trader_price(data: Dict) -> int:
         """Get the highest price offered by a trader for a given item"""
         item_name = data.get("data", {}).get("items", [])[0].get("shortName")
-        self.log(f"No flea market data for {item_name}, going with highest trader price")
         items = data.get("data", {}).get("items", [])
         max_price = max(
             (offer.get("price", 0) for item in items for offer in item.get("sellFor", [])),
@@ -97,13 +95,14 @@ def shorten_price(price: int) -> str:
 class TarkovPriceTracker(Applet):
     """TarkovPriceTracker applet definition"""
 
-    def __init__(self, display: MatrixDisplay, options: Dict[str, str]) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         """Initialisation function"""
-        super().__init__("Tarkov Price Tracker", display, options)
+        super().__init__("Tarkov Price Tracker", *args, **kwargs)
         current_directory = os.path.dirname(os.path.realpath(__file__))
         # assume a dir called 'resources' exists in the same dir as implementation
         self.resources_directory = os.path.join(current_directory, "resources")
-        self.item_names = options.get("item_names")
+        # self.options is made available via *args and **kwargs
+        self.item_names = self.options.get("item_names")
         self.items = []
         self.images = {}
 
@@ -187,7 +186,7 @@ class TarkovPriceTracker(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        while True:
+        while not self.input_handler.exit_requested:
             self.fetch_items()
             for i in range(0, len(self.items), 4):
                 self.display_items(self.items[i : i + 4])
