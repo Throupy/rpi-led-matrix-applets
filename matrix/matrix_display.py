@@ -79,9 +79,9 @@ class MatrixDisplay:
 
         # Determine color based on message_type
         if message_type == "error":
-            color = graphics.Color(220, 0, 0)  # Red color for error message
+            color = self.COLOR_RED
         else:
-            color = graphics.Color(220, 220, 0)  # Yellow color for loading message
+            color = self.COLOR_YELLOW
 
         self._draw_centered_text(message, self.font, color)
 

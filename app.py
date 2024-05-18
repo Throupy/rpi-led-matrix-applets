@@ -22,6 +22,14 @@ class MasterApp:
         self.page_index = 0
         self.display = display
 
+    def log(self, message: str) -> None:
+        """Display an identifiable logging message"""
+        print(f"[LOG] [CORE: Menu] '{message}'")
+
+    def error(self, message: str) -> None:
+        """Display an identifiable error message"""
+        print(f"[ERROR] [CORE: Menu] '{message}'")
+
     def wrap_text(self, text: str, width: int) -> List[str]:
         """Wrap text to a specified width and add a marker at the start of the first line."""
         wrapped_lines = wrap(text, width)
@@ -128,9 +136,9 @@ class MasterApp:
                     }
 
             except FileNotFoundError:
-                print(f"Config file not found in {folder}")
+                self.error(f"Config file not found in {folder}")
             except json.JSONDecodeError:
-                print(f"Error decoding JSON in {folder}")
+                self.error(f"Error decoding JSON in {folder}")
 
         return applets
 
@@ -143,32 +151,61 @@ class MasterApp:
 
         return module
 
+    def is_applet_loaded(self, applet_name: str) -> bool:
+        """Determine whether an applet has already been dynamically imported"""
+        # Check if "instance" key exists, and if it isn't null
+        if self.applets[applet_name].get("instance") and self.applets[applet_name]["instance"]:
+            return True
+        else:
+            return False
+
+    def get_applet_instance_by_name(self, applet_name: str) -> Applet:
+        if self.is_applet_loaded(applet_name):
+            applet = self.applets[applet_name]["instance"]
+            return applet
+        else:
+            self.error(f"get_applet_instance_by_name failed! Applet {applet_name} is not loaded!")
+            return
+
     def select_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
-        self.display.matrix.Clear()
+        selected_applet = None
         applet_name = list(self.applets.keys())[self.current_index]
+
+        self.display.matrix.Clear()
         self.display.show_message(f"Loading {applet_name}...", "loading")
 
-        # Dynamically import selected applet
-
-        selected_applet = None
-        # Instantiate the selected applet
-        # AppletClass = self.applets[applet_name]
-        module_path = self.applets[applet_name]["module_path"]
-        class_name = self.applets[applet_name]["class_name"]
-        options = self.applets[applet_name]["options"]
-        AppletClass = self.dynamic_import_applet(module_path, class_name)
-
-        if hasattr(AppletClass, class_name):
-            selected_applet_type = getattr(AppletClass, class_name)
-            # Instantiate the applet's main class
-            # with the required parameter 'self.display' (reference to the matrix)
-            if options:
-                selected_applet = selected_applet_type(self.display, options)
-            else:
-                selected_applet = selected_applet_type(self.display)
+        if self.is_applet_loaded(applet_name):
+            self.log(
+                f"Applet {applet_name} has already been instantiated, loading from memory instead..."
+            )
+            selected_applet = self.get_applet_instance_by_name(applet_name)
         else:
-            print(f"The class '{class_name}' is not found in the module '{module_path}'")
+            # Dynamically import selected applet
+            self.log(
+                f"Applet {applet_name} has not been instantiated! Dynamically importing now..."
+            )
+            module_path = self.applets[applet_name]["module_path"]
+            class_name = self.applets[applet_name]["class_name"]
+            options = self.applets[applet_name]["options"]
+            AppletClass = self.dynamic_import_applet(module_path, class_name)
+
+            # If the class_name parsed from config.json exists in the AppletClass module
+            if hasattr(AppletClass, class_name):
+                # Get a reference to the Applet's main class (class_name) type definition
+                selected_applet_type = getattr(AppletClass, class_name)
+                # Instantiate the applet's main class
+                # with the required parameter 'self.display' (reference to the matrix)
+                if options:
+                    selected_applet = selected_applet_type(self.display, options)
+                else:
+                    selected_applet = selected_applet_type(self.display)
+
+                self.applets[applet_name]["instance"] = selected_applet
+                self.log(f"Dynamically imported class {class_name} from module {module_path}")
+            else:
+                self.error(f"The class '{class_name}' is not found in the module '{module_path}'")
+                return
 
         # This try, except, finally block allows us to
         # CTRL+C out of the applet and return to the menu.
