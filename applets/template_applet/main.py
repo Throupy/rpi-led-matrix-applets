@@ -23,7 +23,7 @@ class TemplateApplet(Applet):
         self.log("Starting")
         text = "Template"
         # Initial values
-        while True:
+        while not self.input_handler.exit_requested:
             self.display.matrix.Clear()
             graphics.DrawText(
                 self.display.offscreen_canvas,

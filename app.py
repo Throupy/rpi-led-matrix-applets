@@ -1,36 +1,45 @@
 import os
 import sys
+import time
 import json
 import importlib.util
-from typing import Dict, List, Type
+import evdev
+from typing import Dict, List
 from textwrap import wrap
 from matrix.matrix_display import MatrixDisplay, graphics
 from applets.base_applet import Applet
+from input_handlers.xbox_controller import Controller
+from input_handlers.keyboard import Keyboard
+from input_handlers.base_input_handler import BaseInputHandler
 
 
 class MasterApp:
     """Master Application - will control all functionality"""
 
-    def __init__(self, display: MatrixDisplay, applets_root_directory: str) -> None:
+    def __init__(self, _display: MatrixDisplay, _input_handler: BaseInputHandler, _applets_root_directory: str) -> None:
         """Initialise a new MasterApp Instance"""
         # Initialize with a dictionary of applet names to classes
         # so we don't build the app until it's selected
-        self.applets_root_directory = applets_root_directory
+        self.applets_root_directory = _applets_root_directory
         self.MAX_ITEMS_PER_PAGE = 2
         self.applets = self.get_applets_information()
         self.current_index = 0
         self.page_index = 0
-        self.display = display
+        self.display = _display
+        self.input_handler = _input_handler
 
-    def log(self, message: str) -> None:
+    @staticmethod
+    def log(message: str) -> None:
         """Display an identifiable logging message"""
         print(f"[LOG] [CORE: Menu] '{message}'")
 
-    def error(self, message: str) -> None:
+    @staticmethod
+    def error(message: str) -> None:
         """Display an identifiable error message"""
         print(f"[ERROR] [CORE: Menu] '{message}'")
 
-    def wrap_text(self, text: str, width: int) -> List[str]:
+    @staticmethod
+    def wrap_text(text: str, width: int) -> List[str]:
         """Wrap text to a specified width and add a marker at the start of the first line."""
         wrapped_lines = wrap(text, width)
         if wrapped_lines:
@@ -81,22 +90,75 @@ class MasterApp:
             page_indicator_text,
         )
 
-    def navigate_menu(self, direction: str) -> None:
+    def navigate_menu(self) -> None:
         """Change current index, representing menu navigation"""
-        # TODO: Nav system only temporary.
-        if direction == "up":
+        if self.input_handler.up_pressed:
             self.current_index = (self.current_index - 1) % len(self.applets)
-        elif direction == "down":
+        elif self.input_handler.down_pressed:
             self.current_index = (self.current_index + 1) % len(self.applets)
-        elif direction == "left":
+        elif self.input_handler.left_pressed:
             if self.page_index > 0:
                 self.page_index -= 1
                 self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
-        elif direction == "right":
+        elif self.input_handler.right_pressed:
             if (self.page_index + 1) * self.MAX_ITEMS_PER_PAGE < len(self.applets):
                 self.page_index += 1
                 self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
         self.page_index = self.current_index // self.MAX_ITEMS_PER_PAGE
+
+    def get_applet_instance_by_name(self, applet_name: str) -> Applet:
+        if self.is_applet_loaded(applet_name):
+            applet = self.applets[applet_name]["instance"]
+            return applet
+        self.error(f"get_applet_instance_by_name failed! Applet {applet_name} is not loaded!")
+        return
+
+    def select_applet(self) -> None:
+        """Select and build (instantiate) the selected applet"""
+        selected_applet = None
+        applet_name = list(self.applets.keys())[self.current_index]
+
+        self.display.matrix.Clear()
+        self.display.show_message(f"Loading {applet_name}...", "loading")
+
+        if self.is_applet_loaded(applet_name):
+            self.log(
+                f"Applet {applet_name} has already been instantiated, loading from memory instead..."
+            )
+            selected_applet = self.get_applet_instance_by_name(applet_name)
+        else:
+            # Dynamically import selected applet
+            self.log(
+                f"Applet {applet_name} has not been instantiated! Dynamically importing now..."
+            )
+            module_path = self.applets[applet_name]["module_path"]
+            class_name = self.applets[applet_name]["class_name"]
+            options = self.applets[applet_name]["options"]
+            AppletClass = self.dynamic_import_applet(module_path, class_name)
+
+            # If the class_name parsed from config.json exists in the AppletClass module
+            if hasattr(AppletClass, class_name):
+                # Get a reference to the Applet's main class (class_name) type definition
+                selected_applet_type = getattr(AppletClass, class_name)
+                # Instantiate the applet's main class
+                # with the required parameter 'self.display' (reference to the matrix)
+                selected_applet = selected_applet_type(display=self.display, options=options, input_handler=self.input_handler)
+
+                self.applets[applet_name]["instance"] = selected_applet
+                self.log(f"Dynamically imported class {class_name} from module {module_path}")
+            else:
+                self.error(f"The class '{class_name}' is not found in the module '{module_path}'")
+                return
+
+        # This try, except, finally block allows us to
+        # CTRL+C out of the applet and return to the menu.
+        try:
+            selected_applet.start()
+        except KeyboardInterrupt:
+            selected_applet.stop()
+        finally:
+            self.display.matrix.Clear()
+            self.input_handler.exit_requested = False
 
     def get_applets_information(self) -> Dict[str, Dict]:
         """Retrieve information about applets from the config file in each applet's directory"""
@@ -142,7 +204,8 @@ class MasterApp:
 
         return applets
 
-    def dynamic_import_applet(self, module_path: str, module_name: str) -> Applet:
+    @staticmethod
+    def dynamic_import_applet(module_path: str, module_name: str) -> Applet:
         """Dynamically import a module given its file path and module name."""
         spec = importlib.util.spec_from_file_location(module_name, module_path)
         module = importlib.util.module_from_spec(spec)
@@ -159,63 +222,6 @@ class MasterApp:
         else:
             return False
 
-    def get_applet_instance_by_name(self, applet_name: str) -> Applet:
-        if self.is_applet_loaded(applet_name):
-            applet = self.applets[applet_name]["instance"]
-            return applet
-        else:
-            self.error(f"get_applet_instance_by_name failed! Applet {applet_name} is not loaded!")
-            return
-
-    def select_applet(self) -> None:
-        """Select and build (instantiate) the selected applet"""
-        selected_applet = None
-        applet_name = list(self.applets.keys())[self.current_index]
-
-        self.display.matrix.Clear()
-        self.display.show_message(f"Loading {applet_name}...", "loading")
-
-        if self.is_applet_loaded(applet_name):
-            self.log(
-                f"Applet {applet_name} has already been instantiated, loading from memory instead..."
-            )
-            selected_applet = self.get_applet_instance_by_name(applet_name)
-        else:
-            # Dynamically import selected applet
-            self.log(
-                f"Applet {applet_name} has not been instantiated! Dynamically importing now..."
-            )
-            module_path = self.applets[applet_name]["module_path"]
-            class_name = self.applets[applet_name]["class_name"]
-            options = self.applets[applet_name]["options"]
-            AppletClass = self.dynamic_import_applet(module_path, class_name)
-
-            # If the class_name parsed from config.json exists in the AppletClass module
-            if hasattr(AppletClass, class_name):
-                # Get a reference to the Applet's main class (class_name) type definition
-                selected_applet_type = getattr(AppletClass, class_name)
-                # Instantiate the applet's main class
-                # with the required parameter 'self.display' (reference to the matrix)
-                if options:
-                    selected_applet = selected_applet_type(self.display, options)
-                else:
-                    selected_applet = selected_applet_type(self.display)
-
-                self.applets[applet_name]["instance"] = selected_applet
-                self.log(f"Dynamically imported class {class_name} from module {module_path}")
-            else:
-                self.error(f"The class '{class_name}' is not found in the module '{module_path}'")
-                return
-
-        # This try, except, finally block allows us to
-        # CTRL+C out of the applet and return to the menu.
-        try:
-            selected_applet.start()
-        except KeyboardInterrupt:
-            selected_applet.stop()
-        finally:
-            self.display.matrix.Clear()
-
     def run(self) -> None:
         """Run the master application"""
         # TODO: This is only temporary, @Chadders you said something about a controller system?
@@ -223,22 +229,24 @@ class MasterApp:
         self.get_applets_information()
         while True:
             self.display_menu()
-            command = input("Enter command (up, down, left, right, select, exit): ")
-            if command == "up":
-                self.navigate_menu("up")
-            elif command == "down":
-                self.navigate_menu("down")
-            elif command == "left":
-                self.navigate_menu("left")
-            elif command == "right":
-                self.navigate_menu("right")
-            elif command == "select":
+            self.navigate_menu()
+            if self.input_handler.select_pressed:
                 self.select_applet()
-            elif command == "exit":
-                break
+            time.sleep(0.1)
 
+def find_xbox_controller() -> str:
+    """Find xbox controller, return the path e.g. /dev/input/eventX"""
+    devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+    for device in devices:
+        # This is probably not great...
+        if any(keyword in device.name.lower() for keyword in ["xbox", "x-box"]):
+            return device.path
+    return None
 
 if __name__ == "__main__":
+    if os.geteuid() != 0:
+        print("This script must be run as root!")
+        sys.exit(1)
     # Get the directory where the current script is located
     current_script_path = os.path.realpath(__file__)
     current_script_directory = os.path.dirname(current_script_path)
@@ -251,6 +259,14 @@ if __name__ == "__main__":
 
     # here is our ONLY matrix display ever instantiated - will be passed through
     display = MatrixDisplay()
+
+    # try to get xbox controller
+    xbox_controller_path = find_xbox_controller()
+    if xbox_controller_path:
+        input_handler = Controller(xbox_controller_path)
+    else:
+        input_handler = Keyboard()
+
     display.show_message("Building Menu System...", "loading")
-    master_app = MasterApp(display, applets_root_directory)
+    master_app = MasterApp(display, input_handler, applets_root_directory)
     master_app.run()
