@@ -173,7 +173,7 @@ class MasterApp:
             full_path = os.path.join(self.applets_root_directory, item)
             # os.path.isdir() checks if the full path is a directory
             # don't try to add the template applet!!!
-            if os.path.isdir(full_path) and item not in ["__pycache__", "template_applet"]:
+            if os.path.isdir(full_path) and item not in ["__pycache__"]:
                 folders.append(full_path)
 
         # For now, sort alphabetically. This controls the order at which

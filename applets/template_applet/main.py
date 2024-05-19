@@ -9,10 +9,10 @@ from applets.base_applet import Applet
 class TemplateApplet(Applet):
     """Template Applet Definition"""
 
-    def __init__(self, display: MatrixDisplay, options: Dict[str, str]) -> None:
+    def __init__(self, **kwargs) -> None:
         """Initialisation function"""
-        super().__init__("Helldivers Kill Counter", display)
-        self.option_value = options.get("example_option")
+        super().__init__("Template Applet", **kwargs)
+        self.option_value = self.options.get("example_option")
         # Get resource file
         current_directory = os.path.dirname(os.path.realpath(__file__))
         # assume a dir called 'resources' exists in the same dir as implementation
