@@ -1,0 +1,12 @@
+{
+    "name": "QR Code",
+    "description": "Generates a QR Code from a given data string",
+    "version": "1.0",
+    "author": "Owen Throup",
+    "class_name": "QRCodeGenerator",
+    "options": {
+        "data": "I love 0xBC",
+        "qr_border_width": "1",
+        "qr_box_size": "4"
+    }
+}
