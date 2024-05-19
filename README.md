@@ -80,6 +80,49 @@ Note: this will require the following `config.json` definition:
     }
 }
 ```
+
+#### Main loop and Starting applets
+All applets should implement the `start` method. Inside this method you should add a while loop which will run the app until an interrupt is received from an input handler (e.g. CTRL+C, B button on Xbox controller). An example is shown below:
+```python
+def start():
+    """Start the applet"""
+    self.log("Starting applet")
+    while self.input_handler.exit_requested:
+        self.display.matrix.Clear() # clear the display
+        # here, you can do things with the display - set images, text, etc.
+        self.display.matrix.SwapOnVSync(self.display.offscreen_canvas) # required
+        time.sleep(1) # you may wish to change the delay
+
+```
+This `start` method can call other methods from within your applets to, for example, fetch data from an API. An example of this could be:
+```python
+@staticmethod
+def fetch_data():
+    """Fetch data from a cool API and return it for the mainloop"""
+    data = requests.get("http://api.com/get_data")
+    ...
+    return data
+
+def start():
+    """Start the applet"""
+    self.log("Starting applet")
+    while self.input_handler.exit_requested:
+        self.display.matrix.Clear() # clear the display
+        # fetch data from API
+        text = self.fetch_data()
+        # write the data to the matrix
+        graphics.DrawText(
+            self.display.offscreen_canvas,
+            self.display.font,
+            18, # x
+            32, # y
+            graphics.Color(200, 200, 200), # white
+            text,
+        )
+        self.display.matrix.SwapOnVSync(self.display.offscreen_canvas) # required
+        time.sleep(1) # you may wish to change the delay
+```
+
 ### Some Notes about Xbox Controllers
 Drivers and permissions are usually the culprits for xbox controller related issues. Make sure you do the following things if you have issues:
 1. ```
@@ -94,7 +137,6 @@ Drivers and permissions are usually the culprits for xbox controller related iss
 The best way to see this in action is to just look at the `template_applet` directory and files.
 
 ## TODO:
-- [X] NOT HAPPENING - Make something that automatically chmods the resources folder for each individual applet
 - [X] Some kind of Config class for an applet e.g. for the tarkov applet, I want to be able to specify what items to get the values for.
 - [ ] Applet.stop() needs some more sort of memory management - destruction
 - [X] Improve README
@@ -105,7 +147,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [X] Pong game - scoreboard doesn't work
 - [X] Pong game - styling and formatting - make it look pretty
 - [ ] Tarkov - when BMP files don't exist it goes crazy (on bens pi, works on my machine :nerd:)
-- [ ] Into README add start() definition
+- [X] Into README add start() definition
 - [ ] Tarkov app takes long time to quit when B button pressed
 - [ ] Xbox Controller - support debouce (stop joystick movement causing multiple events)
 - [ ] APIs - display error message if cannot get data for API for some reason e.g. no network connection
