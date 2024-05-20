@@ -22,10 +22,6 @@ class QRCodeGenerator(Applet):
             f"Initialized QR code generator: border - {self.qr_border_width}, "
             f"box - {self.qr_box_size}, data - {self.data[:10]}..."
         )
-        # Get resource file
-        current_directory = os.path.dirname(os.path.realpath(__file__))
-        # assume a dir called 'resources' exists in the same dir as implementation
-        self.resources_directory = os.path.join(current_directory, "resources")
 
     def generate_qr_code(self, data: str) -> str:
         """Generate QR code based on data passed in config"""

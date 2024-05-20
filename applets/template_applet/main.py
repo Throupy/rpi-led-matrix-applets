@@ -13,10 +13,6 @@ class TemplateApplet(Applet):
         """Initialisation function"""
         super().__init__("Template Applet", **kwargs)
         self.option_value = self.options.get("example_option")
-        # Get resource file
-        current_directory = os.path.dirname(os.path.realpath(__file__))
-        # assume a dir called 'resources' exists in the same dir as implementation
-        self.resources_directory = os.path.join(current_directory, "resources")
 
     def start(self) -> None:
         """Start the applet"""
