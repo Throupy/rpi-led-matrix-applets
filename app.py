@@ -155,8 +155,9 @@ class MasterApp:
         try:
             selected_applet.start()
         except KeyboardInterrupt:
-            selected_applet.stop()
+            pass
         finally:
+            selected_applet.stop()
             self.display.matrix.Clear()
             self.input_handler.exit_requested = False
 
