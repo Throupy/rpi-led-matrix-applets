@@ -92,15 +92,17 @@ class MasterApp:
 
     def navigate_menu(self) -> None:
         """Change current index, representing menu navigation"""
-        if self.input_handler.up_pressed:
+        latest_inputs = self.input_handler.get_latest_inputs()
+        #print(latest_inputs)
+        if latest_inputs['up_pressed']:
             self.current_index = (self.current_index - 1) % len(self.applets)
-        elif self.input_handler.down_pressed:
+        elif latest_inputs['down_pressed']:
             self.current_index = (self.current_index + 1) % len(self.applets)
-        elif self.input_handler.left_pressed:
+        elif latest_inputs['left_pressed']:
             if self.page_index > 0:
                 self.page_index -= 1
                 self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
-        elif self.input_handler.right_pressed:
+        elif latest_inputs['right_pressed']:
             if (self.page_index + 1) * self.MAX_ITEMS_PER_PAGE < len(self.applets):
                 self.page_index += 1
                 self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
