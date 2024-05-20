@@ -98,10 +98,6 @@ class TarkovPriceTracker(Applet):
     def __init__(self, *args, **kwargs) -> None:
         """Initialisation function"""
         super().__init__("Tarkov Price Tracker", *args, **kwargs)
-        current_directory = os.path.dirname(os.path.realpath(__file__))
-        # assume a dir called 'resources' exists in the same dir as implementation
-        self.resources_directory = os.path.join(current_directory, "resources")
-        # self.options is made available via *args and **kwargs
         self.item_names = self.options.get("item_names")
         self.items = []
         self.images = {}

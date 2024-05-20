@@ -155,8 +155,9 @@ class MasterApp:
         try:
             selected_applet.start()
         except KeyboardInterrupt:
-            selected_applet.stop()
+            pass
         finally:
+            selected_applet.stop()
             self.display.matrix.Clear()
             self.input_handler.exit_requested = False
 
@@ -173,7 +174,7 @@ class MasterApp:
             full_path = os.path.join(self.applets_root_directory, item)
             # os.path.isdir() checks if the full path is a directory
             # don't try to add the template applet!!!
-            if os.path.isdir(full_path) and item not in ["__pycache__"]:
+            if os.path.isdir(full_path) and item not in ["__pycache__", "template_applet"]:
                 folders.append(full_path)
 
         # For now, sort alphabetically. This controls the order at which

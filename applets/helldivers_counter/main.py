@@ -15,10 +15,6 @@ class HelldiversKillCounter(Applet):
     def __init__(self, *args, **kwargs) -> None:
         """Initialisation function"""
         super().__init__("Helldivers Kill Counter", *args, **kwargs)
-        # Get resource file
-        current_directory = os.path.dirname(os.path.realpath(__file__))
-        # assume a dir called 'resources' exists in the same dir as implementation
-        self.resources_directory = os.path.join(current_directory, "resources")
         self.image_bugs = self.load_and_convert_image("bugs.png")
         self.image_bots = self.load_and_convert_image("bots.png")
         # start displaying terminid kill count

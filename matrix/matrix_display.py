@@ -15,6 +15,7 @@ class MatrixDisplay:
         options.chain_length = 1
         options.parallel = 1
         options.hardware_mapping = "adafruit-hat-pwm"
+        options.drop_privileges = False
         self.load_font()
         self.matrix = RGBMatrix(options=options)
         # no font specified - a default font of tom-thumb.bdf (it's nice)
