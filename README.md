@@ -33,14 +33,15 @@ class MyAwesomeApplet(Applet):
 ```
 
 #### Resources Directory
-If you're using resources, be sure to add a reference to the directory on the Applet:
+The BaseApplet (parent) creates a reference to a resources directory within the applet's directory. It is accessible through `self.resource_directory`, which will return the full filesystem path.
 ```python
 class MyAwesomeApplet(Applet):
     def __init__(self, *args, **kwargs):
         super().init("Applet Name", *args, **kwargs)
-+       current_directory = os.path.dirname(os.path.realpath(__file__))
-+       # assume a dir called 'resources' exists in the same dir
-+       self.resources_directory = os.path.join(current_directory, "resources")
+
+    def display_image(self):
+        image_path = os.path.join(self.resources_directory, "image.png")
+        ...
 ```
 #### Configuration Files - Required Options
 As mentioned, the `config.json` file is required for the applet to be loaded into the menu system. Below is an example definition and explanation of each option. **All of the following values are required:**
