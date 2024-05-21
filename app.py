@@ -7,6 +7,7 @@ import evdev
 from typing import Dict, List
 from textwrap import wrap
 from matrix.matrix_display import MatrixDisplay, graphics
+from matrix.colours import Colours
 from applets.base_applet import Applet
 from input_handlers.xbox_controller import Controller
 from input_handlers.keyboard import Keyboard
@@ -31,12 +32,12 @@ class MasterApp:
     @staticmethod
     def log(message: str) -> None:
         """Display an identifiable logging message"""
-        print(f"[LOG] [CORE: Menu] '{message}'")
+        print(f"[LOG] [Menu] '{message}'")
 
     @staticmethod
     def error(message: str) -> None:
         """Display an identifiable error message"""
-        print(f"[ERROR] [CORE: Menu] '{message}'")
+        print(f"[ERROR] [Menu] '{message}'")
 
     @staticmethod
     def wrap_text(text: str, width: int) -> List[str]:
@@ -62,9 +63,9 @@ class MasterApp:
             # 0 in this loop, but 2 in the self.applets.
             i += start_index
             color = (
-                graphics.Color(255, 0, 0)
+                Colours.RED
                 if i == self.current_index
-                else graphics.Color(100, 100, 100)
+                else Colours.WHITE_MUTED
             )
             wrapped_text = self.wrap_text(applet, 12)  # this is width
             for line in wrapped_text:
@@ -75,7 +76,7 @@ class MasterApp:
         # dislplay current page and total pages e.g. [1/2] at the bottom of the matrix
         total_pages = (len(self.applets) + self.MAX_ITEMS_PER_PAGE - 1) // self.MAX_ITEMS_PER_PAGE
         page_indicator_text = f"[{self.page_index + 1}/{total_pages}]"
-        indicator_color = graphics.Color(100, 100, 100)
+        indicator_color = Colours.WHITE_MUTED
         text_length = graphics.DrawText(
             self.display.matrix, self.display.font, 0, 0, indicator_color, page_indicator_text
         )

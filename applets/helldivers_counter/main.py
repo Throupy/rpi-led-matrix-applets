@@ -6,6 +6,7 @@ import json
 from typing import Tuple, Optional
 from PIL import Image
 from matrix.matrix_display import graphics
+from matrix.colours import Colours
 from applets.base_applet import Applet
 
 
@@ -44,9 +45,19 @@ class HelldiversKillCounter(Applet):
                     and item[2] in list(range(200, 256))
                 ):
                     if "bugs" in image_path:
-                        new_data.append((255, 165, 0, item[3]))  # orange
+                        new_data.append((
+                            Colours.TERMINID.red, 
+                            Colours.TERMINID.green, 
+                            Colours.TERMINID.blue, 
+                            item[3]
+                        ))  # orange
                     elif "bots" in image_path:
-                        new_data.append((255, 30, 0, item[3]))  # red
+                        new_data.append((
+                            Colours.AUTOMATON.red, 
+                            Colours.AUTOMATON.green, 
+                            Colours.AUTOMATON.blue, 
+                            item[3]
+                        ))  # red
                 else:
                     new_data.append(item)
 
@@ -89,7 +100,7 @@ class HelldiversKillCounter(Applet):
             self.display.font,
             0,
             0,
-            graphics.Color(255, 255, 255),
+            Colours.WHITE_NORMAL,
             text,
         )
         text_x = (self.display.matrix.width - text_width) // 2
@@ -100,7 +111,7 @@ class HelldiversKillCounter(Applet):
             self.display.font,
             text_x,
             text_y,
-            graphics.Color(255, 255, 255),
+            Colours.WHITE_NORMAL,
             text,
         )
 
