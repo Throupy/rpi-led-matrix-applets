@@ -93,7 +93,7 @@ class HelldiversKillCounter(Applet):
         # Halfway accross the X axis, 1/4 down from the top on Y axis
         x_offset = (self.display.matrix.width - 32) // 2
         y_offset = (self.display.matrix.height - 32) // 4
-        self.display.matrix.SetImage(image.convert("RGB"), x_offset, y_offset)
+        self.display.offscreen_canvas.SetImage(image.convert("RGB"), x_offset, y_offset)
 
         text_width = graphics.DrawText(
             self.display.offscreen_canvas,
@@ -127,11 +127,12 @@ class HelldiversKillCounter(Applet):
         self.update_display(self.current_image, current_text)
         while not self.input_handler.exit_requested:
             current_time = time.time()
+            latest_inputs = self.input_handler.get_latest_inputs()
             if current_time - self.last_fetch_time >= 10:
                 self.bugs, self.bots = self.fetch_data()
                 self.last_fetch_time = current_time
 
-            if current_time - self.last_switch_time >= 5:
+            if current_time - self.last_switch_time >= 5 or latest_inputs["select_pressed"]:
                 self.current_image = (
                     self.image_bots if self.current_image == self.image_bugs else self.image_bugs
                 )
@@ -139,7 +140,7 @@ class HelldiversKillCounter(Applet):
                 self.update_display(self.current_image, current_text)
                 self.last_switch_time = current_time
 
-            time.sleep(1)
+            time.sleep(0.1)
 
     def stop(self) -> None:
         """Stop the applet"""

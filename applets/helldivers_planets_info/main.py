@@ -72,16 +72,17 @@ class HelldiversPlanetsInfo(Applet):
         self.current_planet_index = (self.current_planet_index + 1 ) % len(self.planets)
         while not self.input_handler.exit_requested:
             current_time = time.time()
+            latest_inputs = self.input_handler.get_latest_inputs()
             # Every 10 seconds refresh the data
             if current_time - self.last_fetch_time >= 20:
                 self.planets = self.get_occupied_and_started_planets()
                 self.last_fetch_time = current_time
-            if current_time - self.last_switch_time >= 5:
+            if current_time - self.last_switch_time >= 5 or latest_inputs["select_pressed"]:
                 self.display_planet(self.planets[self.current_planet_index])
                 self.current_planet_index = (self.current_planet_index + 1 ) % len(self.planets)
                 self.last_switch_time = current_time
 
-            time.sleep(1)
+            time.sleep(0.1)
 
     def stop(self) -> None:
         """Stop the applet"""
