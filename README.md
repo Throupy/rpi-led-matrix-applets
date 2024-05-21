@@ -153,7 +153,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [X] Xbox Controller - support debouce (stop joystick movement causing multiple events)
 - [ ] APIs - display error message if cannot get data for API for some reason e.g. no network connection
 - [ ] Add documentation for each applet (e.g. what options it takes etc)
-- [ ] In some applets I am not using offscreen cavnas correctly (owen)
+- [X] In some applets I am not using offscreen cavnas correctly (owen)
 - [X] Move DisplayItem out of tarkov applet def
 - [ ] Make select button skip (e.g. planets)
 
