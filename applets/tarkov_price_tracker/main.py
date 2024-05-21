@@ -3,6 +3,7 @@ import os
 import time
 from typing import List, Dict, Optional
 from rgbmatrix import graphics
+from matrix.colours import Colours
 from PIL import Image
 from applets.base_applet import Applet
 
@@ -162,13 +163,13 @@ class TarkovPriceTracker(Applet):
                 change_text = f"{item.change_last_48h_percent:+.1f}%"
                 text = f"{short_price} {change_text}"
                 color = (
-                    graphics.Color(240, 15, 0)
+                    Colours.RED
                     if item.change_last_48h_percent < 0
-                    else graphics.Color(0, 255, 0)
+                    else Colours.GREEN
                 )
             else:
                 text = f"{short_price} TRADER"
-                color = graphics.Color(0, 255, 0)
+                color = Colours.GREEN
 
             graphics.DrawText(
                 self.display.offscreen_canvas, font, 18, (index * 16) + 12, color, text

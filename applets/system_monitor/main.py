@@ -2,6 +2,7 @@ import time
 import psutil
 from typing import Dict
 from matrix.matrix_display import graphics
+from matrix.colours import Colours
 from applets.base_applet import Applet
 
 
@@ -39,7 +40,7 @@ class SystemMonitor(Applet):
             self.display.font,
             0,
             0,
-            graphics.Color(0, 0, 0),
+            Colours.BLACK,
             text,
         )
 
@@ -47,7 +48,7 @@ class SystemMonitor(Applet):
         """Display system statistics on the matrix"""
         self.display.matrix.Clear()
         y_offset = 10  # lil bit down from the top
-        label_colour = graphics.Color(200, 200, 200)
+        label_colour = Colours.WHITE_NORMAL
 
         # Find longest key - display values inline with the end of longest line
         longest_key = max(stats.keys(), key=len)
@@ -58,7 +59,7 @@ class SystemMonitor(Applet):
                 cpu_percent = float(stat_value.strip("%"))
                 value_color = self.get_color_from_usage(cpu_percent)
             else:
-                value_color = graphics.Color(120, 120, 120)
+                value_color = Colours.WHITE_MUTED
 
             # draw stat name
             graphics.DrawText(

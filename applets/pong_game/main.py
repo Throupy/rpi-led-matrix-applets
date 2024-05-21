@@ -2,6 +2,7 @@ import random
 import time
 import threading
 from rgbmatrix import graphics
+from matrix.colours import Colours
 from applets.base_applet import Applet
 
 class PongGame(Applet):
@@ -75,34 +76,31 @@ class PongGame(Applet):
     def display_game(self) -> None:
         """Display the game on the matrix"""
         self.offscreen_canvas.Clear()
-        color_white = graphics.Color(255, 255, 255)  # White color for the elements
-        color_green = graphics.Color(0, 255, 0)  # Green color for paddles
-        color_blue = graphics.Color(0, 0, 255)  # Blue color for ball
 
         # Draw the border
         for x in range(self.width):
-            self.offscreen_canvas.SetPixel(x, 0, color_white.red, color_white.green, color_white.blue)
-            self.offscreen_canvas.SetPixel(x, self.height - 1, color_white.red, color_white.green, color_white.blue)
+            self.offscreen_canvas.SetPixel(x, 0, Colours.WHITE_NORMAL.red, Colours.WHITE_NORMAL.green, Colours.WHITE_NORMAL.blue)
+            self.offscreen_canvas.SetPixel(x, self.height - 1, Colours.WHITE_NORMAL.red, Colours.WHITE_NORMAL.green, Colours.WHITE_NORMAL.blue)
         for y in range(self.height):
-            self.offscreen_canvas.SetPixel(0, y, color_white.red, color_white.green, color_white.blue)
-            self.offscreen_canvas.SetPixel(self.width - 1, y, color_white.red, color_white.green, color_white.blue)
+            self.offscreen_canvas.SetPixel(0, y, Colours.WHITE_NORMAL.red, Colours.WHITE_NORMAL.green, Colours.WHITE_NORMAL.blue)
+            self.offscreen_canvas.SetPixel(self.width - 1, y, Colours.WHITE_NORMAL.red, Colours.WHITE_NORMAL.green, Colours.WHITE_NORMAL.blue)
 
         # Draw the ball
         for dx in range(self.ball_size):
             for dy in range(self.ball_size):
-                self.offscreen_canvas.SetPixel(self.ball_pos[0] + dx, self.ball_pos[1] + dy, color_blue.red, color_blue.green, color_blue.blue)
+                self.offscreen_canvas.SetPixel(self.ball_pos[0] + dx, self.ball_pos[1] + dy, Colours.BLUE.red, Colours.BLUE.green, Colours.BLUE.blue)
 
         # Draw the paddles
         for dy in range(self.paddle_height):
             for px in range(self.paddle_thickness):
-                self.offscreen_canvas.SetPixel(1 + px, self.player1_pos + dy, color_green.red, color_green.green, color_green.blue)
-                self.offscreen_canvas.SetPixel(self.width - 2 - px, self.player2_pos + dy, color_green.red, color_green.green, color_green.blue)
+                self.offscreen_canvas.SetPixel(1 + px, self.player1_pos + dy, Colours.GREEN.red, Colours.GREEN.green, Colours.GREEN.blue)
+                self.offscreen_canvas.SetPixel(self.width - 2 - px, self.player2_pos + dy, Colours.GREEN.red, Colours.GREEN.green, Colours.GREEN.blue)
 
         # Draw the scores
         score_text = f"{self.score[0]} - {self.score[1]}"
-        text_length = graphics.DrawText(self.offscreen_canvas, self.display.font, 0, 0, color_white, score_text)
+        text_length = graphics.DrawText(self.offscreen_canvas, self.display.font, 0, 0, Colours.WHITE_NORMAL, score_text)
         text_x = (self.width - text_length) // 2  # Center the text horizontally
-        graphics.DrawText(self.offscreen_canvas, self.display.font, text_x, 8, color_white, score_text)  # Adjust Y position as needed
+        graphics.DrawText(self.offscreen_canvas, self.display.font, text_x, 8, Colours.WHITE_NORMAL, score_text)  # Adjust Y position as needed
 
         self.display.matrix.SwapOnVSync(self.offscreen_canvas)
         time.sleep(0.025)

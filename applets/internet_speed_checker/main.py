@@ -2,6 +2,7 @@ import urllib.request
 import time
 import threading
 from rgbmatrix import graphics
+from matrix.colours import Colours
 from applets.base_applet import Applet
 import signal
 
@@ -88,7 +89,7 @@ class SpeedCheck(Applet):
                 self.display.font,
                 0,
                 0,
-                graphics.Color(200, 200, 200),
+                Colours.WHITE_NORMAL,
                 text,
             )
 

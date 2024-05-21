@@ -1,0 +1,10 @@
+{
+    "name": "Helldivers Planets",
+    "description": "Get various bits of information about the current state of helldivers 2 planets",
+    "version": "1.0",
+    "author": "Owen Throup",
+    "class_name": "HelldiversPlanetsInfo",
+    "options": {
+        "example_option": "example_value"
+    }
+}
