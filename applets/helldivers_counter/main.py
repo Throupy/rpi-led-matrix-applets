@@ -96,7 +96,7 @@ class HelldiversKillCounter(Applet):
         self.display.matrix.SetImage(image.convert("RGB"), x_offset, y_offset)
 
         text_width = graphics.DrawText(
-            self.display.matrix,
+            self.display.offscreen_canvas,
             self.display.font,
             0,
             0,
@@ -107,12 +107,16 @@ class HelldiversKillCounter(Applet):
         text_y = y_offset + 32 + 10
 
         graphics.DrawText(
-            self.display.matrix,
+            self.display.offscreen_canvas,
             self.display.font,
             text_x,
             text_y,
             Colours.WHITE_NORMAL,
             text,
+        )
+
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+            self.display.offscreen_canvas
         )
 
     def start(self) -> None:
