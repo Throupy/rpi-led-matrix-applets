@@ -147,14 +147,14 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [ ] Currently, it looks bad if the app takes like 1 second to load and you just get a tiny flicker of the loading screen. Maybe add a time threshold before the loading screen is presented?
 - [X] Pong game - scoreboard doesn't work
 - [X] Pong game - styling and formatting - make it look pretty
-- [ ] Tarkov - when BMP files don't exist it goes crazy (on bens pi, works on my machine :nerd:)
+- [X] Tarkov - when BMP files don't exist it goes crazy (on bens pi, works on my machine :nerd:)
 - [X] Into README add start() definition
 - [ ] Tarkov app takes long time to quit when B button pressed
-- [ ] Xbox Controller - support debouce (stop joystick movement causing multiple events)
+- [X] Xbox Controller - support debouce (stop joystick movement causing multiple events)
 - [ ] APIs - display error message if cannot get data for API for some reason e.g. no network connection
 - [ ] Add documentation for each applet (e.g. what options it takes etc)
 - [ ] In some applets I am not using offscreen cavnas correctly (owen)
-- [ ] Move DisplayItem out of tarkov applet def
+- [X] Move DisplayItem out of tarkov applet def
 - [ ] Make select button skip (e.g. planets)
 
 ## Applet Ideas:
