@@ -145,6 +145,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [ ] Add support to view applet information (press X on controller) such as version, description, author etc
 - [ ] Add a border to the menu (can be part of theming feature)
 - [ ] Currently, it looks bad if the app takes like 1 second to load and you just get a tiny flicker of the loading screen. Maybe add a time threshold before the loading screen is presented?
+- [ ] Press B (or CTRL+C, whatever) when in menu to quit application
 
 ## Applets
 - [X] Some kind of Config class for an applet e.g. for the tarkov applet, I want to be able to specify what items to get the values for.
@@ -152,9 +153,10 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [X] System Monitor - Scale between red and green for system usage
 - [X] Tarkov Price Tracker - Format price function to include millions
 - [X] Tarkov Price Tracker - When BMP files don't exist it goes crazy (on bens pi, works on my machine :nerd:)
-- [ ] Tarkov Price Tracker - App takes long time to quit when B button pressed
+- [X] Tarkov Price Tracker - App takes long time to quit when B button pressed
 - [X] Tarkov Price Tracker - Move DisplayItem out of applet definition
-- [ ] Tarkov Price Tracker - Complete refactor - this was the first app created and doesn't use good format e.g. fetching, updating. Use the helldivers apps as references.
+- [X] Tarkov Price Tracker - Complete refactor - this was the first app created and doesn't use good format e.g. fetching, updating. Use the helldivers apps as references.
+- [ ] Tarkov Price Tracker - User pressing A does not do anything if they press A while fetch_data is running. This is because the function is blocking. Consider using async approach but, is it worth it?
 - [X] Pong Game - Fix scoreboard
 - [X] Pong Game - Styling and formatting - make it look pretty
 - [X] Helldivers Counter - Make select button skip (e.g. planets)
