@@ -154,6 +154,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [X] Tarkov Price Tracker - When BMP files don't exist it goes crazy (on bens pi, works on my machine :nerd:)
 - [ ] Tarkov Price Tracker - App takes long time to quit when B button pressed
 - [X] Tarkov Price Tracker - Move DisplayItem out of applet definition
+- [ ] Tarkov Price Tracker - Complete refactor - this was the first app created and doesn't use good format e.g. fetching, updating. Use the helldivers apps as references.
 - [X] Pong Game - Fix scoreboard
 - [X] Pong Game - Styling and formatting - make it look pretty
 - [X] Helldivers Counter - Make select button skip (e.g. planets)
@@ -166,7 +167,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [ ] Add documentation for each applet (e.g. what options it takes etc)
 
 ## Other
-- [ ] APIs - display error message if cannot get data for API for some reason e.g. no network connection
+- [X] APIs - display error message if cannot get data for API for some reason e.g. no network connection
 
 ## Input Handling
 - [X] Xbox Controller - support debouce (stop joystick movement causing multiple events)

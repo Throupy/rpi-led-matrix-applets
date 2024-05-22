@@ -13,22 +13,28 @@ class HelldiversPlanetsInfo(Applet):
     def __init__(self, **kwargs) -> None:
         """Initialisation function"""
         super().__init__("Template Applet", **kwargs)
-        self.root_url = "https://api.helldivers2.dev/api/v1/planets"
-        self.last_switch_time = time.time()
+        self.last_switch_time = time.time() - 5
         self.last_fetch_time = time.time()
         self.current_planet_index = 0
         self.planets = self.get_occupied_and_started_planets()
 
     def get_occupied_and_started_planets(self) -> List[Planet]:
         """Get all of the enemy-occupied planets, which have started being liberated"""
-        response = requests.get(self.root_url).json()
-        planets = [
-            planet for planet in response if \
-                planet["currentOwner"] != "Human" and \
-                planet["maxHealth"] != planet["health"]
-        ]
-        planets = [Planet.from_json(planet) for planet in planets]
-        return planets
+        try:
+            root_url = "https://api.helldivers2.dev/api/v1/planets"
+            response = requests.get(root_url).json()
+            planets = [
+                planet for planet in response if \
+                    planet["currentOwner"] != "Human" and \
+                    planet["maxHealth"] != planet["health"]
+            ]
+            planets = [Planet.from_json(planet) for planet in planets]
+            return planets
+        except requests.exceptions.RequestException as e:
+            self.display.show_message("Network error. Check your connection", "error")
+            time.sleep(2)
+            self.input_handler.exit_requested = True
+            return None
 
     def display_planet(self, planet: Planet) -> None:
         """Update matrix display with planet information"""
@@ -68,8 +74,10 @@ class HelldiversPlanetsInfo(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        self.display_planet(self.planets[self.current_planet_index])
-        self.current_planet_index = (self.current_planet_index + 1 ) % len(self.planets)
+        # when the app is "loaded from memory" it messes with previous error handling
+        # to prevent this, I have added a presence check on self.planets
+        if not self.planets:
+            self.planets = self.get_occupied_and_started_planets()
         while not self.input_handler.exit_requested:
             current_time = time.time()
             latest_inputs = self.input_handler.get_latest_inputs()

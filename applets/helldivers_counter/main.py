@@ -18,12 +18,13 @@ class HelldiversKillCounter(Applet):
         super().__init__("Helldivers Kill Counter", *args, **kwargs)
         self.image_bugs = self.load_and_convert_image("bugs.png")
         self.image_bots = self.load_and_convert_image("bots.png")
+        # intialise variables
+        self.bugs, self.bots = self.fetch_data()
         # start displaying terminid kill count
         self.current_image = self.image_bugs
-        self.last_switch_time = time.time()
+        # add a -5 to hit the first conditinal in update_display()
+        self.last_switch_time = time.time() - 5
         self.last_fetch_time = time.time()
-        # fetch initial values at build time
-        self.bugs, self.bots = self.fetch_data()
 
     def load_and_convert_image(self, image_name: str) -> Image:
         """Load an image from a filepath and convert it into a displayable format"""
@@ -75,7 +76,6 @@ class HelldiversKillCounter(Applet):
         root = "https://api.helldivers2.dev"
         try:
             response = requests.get(f"{root}/raw/api/Stats/war/801/summary")
-            response.raise_for_status()
             data = response.json()
             bugs = str(data["galaxy_stats"]["bugKills"])
             bots = str(data["galaxy_stats"]["automatonKills"])
@@ -83,8 +83,10 @@ class HelldiversKillCounter(Applet):
                 f"Fetched data from the HellDivers API - bug count : bot count = {bugs} : {bots}"
             )
             return bugs, bots
-        except (requests.exceptions.RequestException, json.JSONDecodeError):
-            self.log("There was an error fetching the helldivers data...")
+        except requests.exceptions.RequestException as e:
+            self.display.show_message("Network error. Check your connection", "error")
+            time.sleep(2)
+            self.input_handler.exit_requested = True
             return None, None
 
     def update_display(self, image: Image, text: str) -> None:
@@ -122,9 +124,10 @@ class HelldiversKillCounter(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        # Initial values
-        current_text = self.bugs if self.current_image == self.image_bugs else self.bots
-        self.update_display(self.current_image, current_text)
+        # when the app is "loaded from memory" it messes with previous error handlign
+        # to prevent this, I have added a presence check on self.bots / self.bugs
+        if not self.bots or not self.bugs:
+            self.bugs, self.bots = self.fetch_data()
         while not self.input_handler.exit_requested:
             current_time = time.time()
             latest_inputs = self.input_handler.get_latest_inputs()
@@ -132,7 +135,10 @@ class HelldiversKillCounter(Applet):
                 self.bugs, self.bots = self.fetch_data()
                 self.last_fetch_time = current_time
 
-            if current_time - self.last_switch_time >= 5 or latest_inputs["select_pressed"]:
+            if (
+                current_time - self.last_switch_time >= 5 
+                or latest_inputs["select_pressed"]
+            ):
                 self.current_image = (
                     self.image_bots if self.current_image == self.image_bugs else self.image_bugs
                 )
