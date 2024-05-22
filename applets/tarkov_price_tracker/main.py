@@ -9,19 +9,6 @@ from applets.base_applet import Applet
 from applets.tarkov_price_tracker.display_item import DisplayItem
 
 
-def run_query(query: str) -> Dict:
-    """Run a GraphQL query"""
-    headers = {"Content-Type": "application/json"}
-    try:
-        response = requests.post(
-            "https://api.tarkov.dev/graphql", headers=headers, json={"query": query}
-        )
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        raise Exception(f"Query failed to run: {e}")
-
-
 def generate_query(item_name: str) -> str:
     """Generate a GraphQL query for a given item"""
     return f"""
@@ -60,6 +47,17 @@ class TarkovPriceTracker(Applet):
         self.items = []
         self.images = {}
 
+    def run_query(self, query: str) -> Dict:
+        """Run a GraphQL query"""
+        headers = {"Content-Type": "application/json"}
+        try:
+            response = requests.post(
+                "https://api.tarkov.dev/graphql", headers=headers, json={"query": query}
+            )
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return None
+
     def load_and_convert_image(self, image_name: str, icon_link: str) -> Image:
         """Load image from URL and convert into displayable format, save as BMP if required"""
         image_path = os.path.join(self.resources_directory, image_name)
@@ -92,7 +90,12 @@ class TarkovPriceTracker(Applet):
         for item_name in self.item_names:
             query = generate_query(item_name)
             try:
-                result = run_query(query)
+                result = self.run_query(query)
+                if not result:
+                    self.display.show_message("Network error. Check your connection", "error")
+                    time.sleep(2)
+                    self.input_handler.exit_requested = True
+                    return
                 display_item = DisplayItem.from_graphql(result)
                 if display_item:
                     self.items.append(display_item)
@@ -107,6 +110,8 @@ class TarkovPriceTracker(Applet):
                     self.log(f"No item found for {item_name}.")
             except Exception as e:
                 self.log(f"Error retrieving data for {item_name}: {e}")
+            finally:
+                time.sleep(0.1)
 
     def display_items(self, items: List[DisplayItem]) -> None:
         """Display the selected items onto the matrix"""
