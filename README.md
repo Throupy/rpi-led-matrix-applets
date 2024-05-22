@@ -140,6 +140,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 ### TODO:
 ## Menu
 - [ ] Add theming system with customisable colours etc
+- [ ] Potentially implement threading for input handling + rendering (on one thread for simplicity), then everything else runs on a separate thread (such as API calls that could take up to a second etc), which will improve responsiveness
 - [ ] Add background/idle applet that loads after 5 mins idling on menu (configurable), could show clock / system uptime overlayed onto a GIF
 - [ ] Some form of brightness control (for the idle app), not sure if brightness can be changed after instantiating the matrix though...
 - [ ] Add support to view applet information (press X on controller) such as version, description, author etc
