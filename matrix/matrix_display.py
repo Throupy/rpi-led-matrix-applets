@@ -19,10 +19,9 @@ class MatrixDisplay:
         options.drop_privileges = False
         self.load_font()
         self.matrix = RGBMatrix(options=options)
-        # no font specified - a default font of tom-thumb.bdf (it's nice)
         self.offscreen_canvas = self.matrix.CreateFrameCanvas()
 
-    def load_font(self, font_name: str = "tom-thumb.bdf") -> graphics.Font:
+    def load_font(self, font_name: str = "tom-thumb-fixed.bdf") -> graphics.Font:
         """Load a font, given the font name"""
         font = graphics.Font()
         font.LoadFont(f"matrix/fonts/{font_name}")
