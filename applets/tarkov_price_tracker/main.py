@@ -82,7 +82,7 @@ class TarkovPriceTracker(Applet):
 
     def display_items(self, items: List[DisplayItem]) -> None:
         """Update matrix display with multiple items' information"""
-        self.display.matrix.Clear()
+        self.display.clear()
         for index, item in enumerate(items):
             image = self.images[item.name]
             self.display.offscreen_canvas.SetImage(image.convert("RGB"), 0, index * 16)
@@ -138,7 +138,7 @@ class TarkovPriceTracker(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
+        self.display.clear()
 
 
 def generate_query(item_name: str) -> str:

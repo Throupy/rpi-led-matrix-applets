@@ -20,7 +20,7 @@ class AppletInformationViewer(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        self.display.matrix.Clear()
+        self.display.clear()
 
         # Filter the keys and values based on keys_to_show
         keys = [key for key in self.keys_to_show if key in self.applet_config]
@@ -32,7 +32,7 @@ class AppletInformationViewer(Applet):
             if current_time - self.last_switch_time >= 5 or latest_inputs.get(
                 "select_pressed"
             ):
-                self.display.matrix.Clear()
+                self.display.clear()
                 current_key = keys[self.current_index % len(keys)]
                 current_value = values[self.current_index % len(values)]
                 # Draw Title
@@ -51,4 +51,4 @@ class AppletInformationViewer(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
+        self.display.clear()

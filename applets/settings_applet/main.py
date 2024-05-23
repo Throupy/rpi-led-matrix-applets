@@ -14,7 +14,7 @@ class SettingsApplet(Applet):
         """Start the applet"""
         self.log("Starting")
         while not self.input_handler.exit_requested:
-            self.display.matrix.Clear()
+            self.display.clear()
             latest_inputs = self.input_handler.get_latest_inputs()
             if latest_inputs["right_pressed"]:
                 # ensure brightness never rises over 100
@@ -43,4 +43,4 @@ class SettingsApplet(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
+        self.display.clear()

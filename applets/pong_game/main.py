@@ -203,4 +203,4 @@ class PongGame(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping Pong Game")
-        self.display.matrix.Clear()
+        self.display.clear()

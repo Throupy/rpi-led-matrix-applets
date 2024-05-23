@@ -60,4 +60,4 @@ class QRCodeGenerator(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
+        self.display.clear()

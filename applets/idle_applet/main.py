@@ -14,7 +14,7 @@ class IdleApplet(Applet):
         # Get the current time
         current_time = time.localtime()
         h, m, s = current_time.tm_hour, current_time.tm_min, current_time.tm_sec
-        self.display.matrix.Clear()
+        self.display.clear()
         time_string = f"{h:02}:{m:02}:{s:02}"
 
         self.display.draw_centered_text(time_string, Colours.WHITE_MUTED, start_y=16)
@@ -43,4 +43,4 @@ class IdleApplet(Applet):
 
     def stop(self) -> None:
         self.log("Stopping IdleApplet")
-        self.display.matrix.Clear()
+        self.display.clear()

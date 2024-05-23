@@ -1,15 +1,50 @@
 """Contains the code for handling the matrix display - interaction with library"""
 
 import textwrap
+from dataclasses import dataclass
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 from matrix.colours import Colours
+
+
+@dataclass
+class BoundingBox:
+    # Co-ordinate like structure, always rectangles
+    x1: int
+    y1: int
+    x2: int
+    y2: int
+
+    def overlaps(self, other: "BoundingBox") -> bool:
+        """Check if this bounding box overlaps with another"""
+        # thank god for chatgpt for this one...
+        return not (
+            self.x2 <= other.x1
+            or self.x1 >= other.x2
+            or self.y2 <= other.y1
+            or self.y1 >= other.y2
+        )
+
+    def is_within_screen_bounds(self, width: int, height: int) -> bool:
+        """Check if this bounding box is within the matrix bounds (e.g. 64x64)"""
+        return self.x1 >= 0 and self.y1 >= 0 and self.x2 <= width and self.y2 <= height
+
+    def get_width(self) -> int:
+        """Get the width of the bounding box."""
+        return self.x2 - self.x1
+
+    def get_height(self) -> int:
+        """Get the height of the bounding box."""
+        return self.y2 - self.y1
+
+    def __str__(self) -> str:
+        """Return a string representation of the bounding box."""
+        return (f"BoundingBox(x1={self.x1}, y1={self.y1}, x2={self.x2}, y2={self.y2}, "
+                f"width={self.get_width()}, height={self.get_height()})")
 
 
 class MatrixDisplay:
     def __init__(self) -> None:
         """Initialise the MatrixDisplay"""
-        # eventually we could pass "config" object in - is it going to
-        # change for each applet? unlikely, but possibly.
         options = RGBMatrixOptions()
         options.rows = 64
         options.cols = 64
@@ -17,9 +52,16 @@ class MatrixDisplay:
         options.parallel = 1
         options.hardware_mapping = "adafruit-hat-pwm"
         options.drop_privileges = False
-        self.load_font()
+        self.load_font("5x5.bdf")
         self.matrix = RGBMatrix(options=options)
+        self.matrix_padding = 1
+        self.max_chars_per_line = self.matrix.width // self.font.CharacterWidth(
+            ord("W")
+        ) - self.matrix_padding
         self.offscreen_canvas = self.matrix.CreateFrameCanvas()
+        # Holds a list of "bounding boxes" around text / images / other elements
+        # This is for checking for overlapping etc.
+        self.bounding_boxes = []
 
     def load_font(self, font_name: str = "tom-thumb-fixed.bdf") -> graphics.Font:
         """Load a font, given the font name"""
@@ -36,33 +78,31 @@ class MatrixDisplay:
             width += font.CharacterWidth(ord(char))
         return width
 
-    def draw_progress_bar(
-        self,
-        progress_percentage: float,
-        colour: graphics.Color,
-        x: int = 4,
-        y: int = 4,
-        width: int = 56,
-        height: int = 4,
-    ) -> None:
-        """Draw a progress bar to the canvas"""
-        filled_section_width = int(width * progress_percentage / 100)
-        # draw the filled bit of the bar
-        for dx in range(filled_section_width):
-            for dy in range(height):
-                self.offscreen_canvas.SetPixel(
-                    x + dx, y + dy, colour.red, colour.green, colour.blue
-                )
-        # now draw the empty part of hte bar
-        for dx in range(filled_section_width, width):
-            for dy in range(height):
-                self.offscreen_canvas.SetPixel(
-                    x + dx,
-                    y + dy,
-                    max(0, colour.red - 175),
-                    max(0, colour.green - 175),
-                    max(0, colour.blue - 175),
-                )
+    def _check_for_overlap_or_bounds(self, bounding_box: BoundingBox) -> bool:
+        """Check if bounding box overlaps with any existing bounding boxes"""
+        if not bounding_box.is_within_screen_bounds(self.matrix.width, self.matrix.height):
+            return True
+        # check for overlap with other existing bounding boxes (other text)
+        for box in self.bounding_boxes:
+            if bounding_box.overlaps(box):
+                return True
+        return False
+
+    def draw_text(self, x: int, y: int, text: str, color: graphics.Color, line_spacing: int = 2, **kwargs):
+        """Draw text at given locations with bounds checking"""
+        max_width = kwargs.get("max_width", self.matrix.width - x)
+        print(f"Attempting to draw text: '{text}' at ({x}, {y}) with max width {max_width}")
+        text_width = self._get_text_width(self.font, text)
+        bounding_box = BoundingBox(x, y - self.font.height, x + text_width, y)
+        if self._check_for_overlap_or_bounds(bounding_box):
+            text = "..."
+            text_width = self._get_text_width(self.font, text)
+            bounding_box = BoundingBox(x, y - self.font.height, x + text_width, y)
+
+        print(f"Drawing text: '{text}' at ({x}, {y})")
+        graphics.DrawText(self.offscreen_canvas, self.font, x, y, color, text)
+        self.bounding_boxes.append(bounding_box)
+        return True
 
     def draw_centered_text(
         self, text: str, color: graphics.Color, line_spacing: int = 2, **kwargs
@@ -72,7 +112,7 @@ class MatrixDisplay:
             start_y: where to draw the text on y axis - if not specified then it will be centered
         """
         # Split the message into lines if it's too long
-        wrapped_text = textwrap.wrap(text, width=14)  # Adjust width as necessary
+        wrapped_text = textwrap.wrap(text, width=self.max_chars_per_line)
         total_height = len(wrapped_text) * (
             self.font.height + line_spacing
         )  # Assuming 2 pixels spacing between lines
@@ -91,15 +131,57 @@ class MatrixDisplay:
             # (may be less CPU intensive when dealing with large amounts of DrawText calls)
             # text_width = self._get_text_width(self.font, line)
             x = (self.matrix.width - text_width) // 2
+            bounding_box = BoundingBox(x, start_y - self.font.height, x + text_width, start_y)
+            if self._check_for_overlap_or_bounds(bounding_box):
+                print(f"Error: Text '{text} would overlap with existing text or go out of bounds")
+                return
             graphics.DrawText(self.offscreen_canvas, self.font, x, start_y, color, line)
-            start_y += self.font.height + 2
+            self.bounding_boxes.append(bounding_box)
+            start_y += self.font.height + line_spacing
+
+    def draw_progress_bar(
+        self,
+        progress_percentage: float,
+        colour: graphics.Color,
+        x: int = 4,
+        y: int = 4,
+        width: int = 56,
+        height: int = 4,
+    ) -> None:
+        """Draw a progress bar to the canvas"""
+        bounding_box = BoundingBox(x, y, x + width, y + height)
+        if self._check_for_overlap_or_bounds(bounding_box):
+            print("Error: Progress bar would overlap with existing elements or go out of bounds.")
+            return
+        filled_section_width = int(width * progress_percentage / 100)
+        # draw the filled bit of the bar
+        for dx in range(filled_section_width):
+            for dy in range(height):
+                self.offscreen_canvas.SetPixel(
+                    x + dx, y + dy, colour.red, colour.green, colour.blue
+                )
+        # now draw the empty part of hte bar
+        for dx in range(filled_section_width, width):
+            for dy in range(height):
+                self.offscreen_canvas.SetPixel(
+                    x + dx,
+                    y + dy,
+                    max(0, colour.red - 175),
+                    max(0, colour.green - 175),
+                    max(0, colour.blue - 175),
+                )
+        self.bounding_boxes.append(bounding_box)
+
+    def clear(self):
+        self.matrix.Clear()
+        self.offscreen_canvas.Clear()
+        self.bounding_boxes = []
 
     def show_message(
         self, message: str = "Loading...", message_type: str = "loading"
     ) -> None:
         """Show a message of a given type e.g. error"""
-        self.matrix.Clear()
-        self.offscreen_canvas.Clear()
+        self.clear()
 
         # Determine color based on message_type
         if message_type == "error":

@@ -40,7 +40,7 @@ class HelldiversPlanetsInfo(Applet):
         self.log(
             f"Updating display to show information of planet with name {planet.name}"
         )
-        self.display.matrix.Clear()
+        self.display.clear()
         # Draw the planet's name
         self.display.draw_centered_text(planet.name, planet.colour, start_y=8)
 
@@ -93,4 +93,4 @@ class HelldiversPlanetsInfo(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
+        self.display.clear()

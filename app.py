@@ -61,7 +61,7 @@ class MasterApp:
 
     def display_menu(self) -> None:
         """Display the menu system on the RGB Matrix"""
-        self.display.matrix.Clear()
+        self.display.clear()
         y_offset = 10  # Start a bit down from the top
         start_index = self.page_index * self.MAX_ITEMS_PER_PAGE
         end_index = start_index + self.MAX_ITEMS_PER_PAGE
@@ -164,7 +164,7 @@ class MasterApp:
             pass
         finally:
             applet.stop()
-            self.display.matrix.Clear()
+            self.display.clear()
             self.input_handler.exit_requested = False
             self.last_input_time = time.time()
 
@@ -173,7 +173,7 @@ class MasterApp:
         selected_applet = None
         applet_name = list(self.applets.keys())[self.current_index]
 
-        self.display.matrix.Clear()
+        self.display.clear()
         self.display.show_message(f"Loading {applet_name}...", "loading")
 
         if self.is_applet_loaded(applet_name):

@@ -18,7 +18,7 @@ class TemplateApplet(Applet):
         text = "Template"
         # Initial values
         while not self.input_handler.exit_requested:
-            self.display.matrix.Clear()
+            self.display.clear()
             graphics.DrawText(
                 self.display.offscreen_canvas,
                 self.display.font,
@@ -38,4 +38,4 @@ class TemplateApplet(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
+        self.display.clear()
