@@ -123,7 +123,7 @@ class MasterApp:
         self.error(f"get_applet_instance_by_name failed! Applet {applet_name} is not loaded!")
         return
 
-    def view_applet_information(self) -> None:
+    def create_applet_info_applet(self) -> None:
         """Open the view applet applet with the selected applet"""
         selected_applet_name = list(self.applets.keys())[self.current_index]
         # get configuration file for applet
@@ -136,35 +136,29 @@ class MasterApp:
             input_handler=self.input_handler,
             applet_config=selected_applet_config_json
         )
+        return view_applet_information_applet
 
-        try:
-            view_applet_information_applet.start()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            view_applet_information_applet.stop()
-            self.display.matrix.Clear()
-            self.input_handler.exit_requested = False
-            self.last_input_time = time.time()
-
-    def open_settings(self) -> None:
+    def create_settings_applet(self) -> SettingsApplet:
         """Open the settings applet"""
         settings_applet = SettingsApplet(
             display=self.display,
             input_handler=self.input_handler
         )
+        return settings_applet
 
+
+    def launch_applet(self, applet: Applet) -> None:
         try:
-            settings_applet.start()
+            applet.start()
         except KeyboardInterrupt:
             pass
         finally:
-            settings_applet.stop()
+            applet.stop()
             self.display.matrix.Clear()
             self.input_handler.exit_requested = False
-            self.last_input_time = time.time()
+            self.last_input_time = time.time()        
 
-    def select_applet(self) -> None:
+    def create_selected_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
         selected_applet = None
         applet_name = list(self.applets.keys())[self.current_index]
@@ -201,17 +195,7 @@ class MasterApp:
                 self.error(f"The class '{class_name}' is not found in the module '{module_path}'")
                 return
 
-        # This try, except, finally block allows us to
-        # CTRL+C out of the applet and return to the menu.
-        try:
-            selected_applet.start()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            selected_applet.stop()
-            self.display.matrix.Clear()
-            self.input_handler.exit_requested = False
-            self.last_input_time = time.time()
+        return selected_applet
 
     def get_applets_information(self) -> Dict[str, Dict]:
         """Retrieve information about applets from the config file in each applet's directory"""
@@ -289,11 +273,11 @@ class MasterApp:
             self.display_menu()
             self.navigate_menu()
             if self.input_handler.select_pressed:
-                self.select_applet()
+                self.launch_applet(self.create_selected_applet())
             if self.input_handler.x_pressed:
-                self.view_applet_information()
+                self.launch_applet(self.create_applet_info_applet())
             if self.input_handler.y_pressed:
-                self.open_settings()
+                self.launch_applet(self.create_settings_applet())
 
             # check for idle time - should we display idle applet?
             if time.time() - self.last_input_time > self.IDLE_SCREEN_THRESHOLD_SECONDS:
@@ -301,15 +285,7 @@ class MasterApp:
                     display=self.display,
                     input_handler=self.input_handler
                 )
-                try:
-                    idle_applet.start()
-                except KeyboardInterrupt:
-                    pass
-                finally:
-                    idle_applet.stop()
-                    self.display.matrix.Clear()
-                    self.input_handler.exit_requested = False
-                    self.last_input_time = time.time()  # Reset idle timer after idling
+                self.launch_applet(idle_applet)
 
             time.sleep(0.1)
 
