@@ -20,7 +20,12 @@ from input_handlers.base_input_handler import BaseInputHandler
 class MasterApp:
     """Master Application - will control all functionality"""
 
-    def __init__(self, _display: MatrixDisplay, _input_handler: BaseInputHandler, _applets_root_directory: str) -> None:
+    def __init__(
+        self,
+        _display: MatrixDisplay,
+        _input_handler: BaseInputHandler,
+        _applets_root_directory: str,
+    ) -> None:
         """Initialise a new MasterApp Instance"""
         # Initialize with a dictionary of applet names to classes
         # so we don't build the app until it's selected
@@ -67,23 +72,28 @@ class MasterApp:
             # this is because first applet on second page (assuming 2 per page) would have index
             # 0 in this loop, but 2 in the self.applets.
             i += start_index
-            color = (
-                Colours.RED
-                if i == self.current_index
-                else Colours.WHITE_MUTED
-            )
+            color = Colours.RED if i == self.current_index else Colours.WHITE_MUTED
             wrapped_text = self.wrap_text(applet, 12)  # this is width
             for line in wrapped_text:
-                graphics.DrawText(self.display.matrix, self.display.font, 1, y_offset, color, line)
+                graphics.DrawText(
+                    self.display.matrix, self.display.font, 1, y_offset, color, line
+                )
                 y_offset += 10  # this is for line height
             y_offset += 5  # Additional spacing between applets
 
         # dislplay current page and total pages e.g. [1/2] at the bottom of the matrix
-        total_pages = (len(self.applets) + self.MAX_ITEMS_PER_PAGE - 1) // self.MAX_ITEMS_PER_PAGE
+        total_pages = (
+            len(self.applets) + self.MAX_ITEMS_PER_PAGE - 1
+        ) // self.MAX_ITEMS_PER_PAGE
         page_indicator_text = f"[{self.page_index + 1}/{total_pages}]"
         indicator_color = Colours.WHITE_MUTED
         text_length = graphics.DrawText(
-            self.display.matrix, self.display.font, 0, 0, indicator_color, page_indicator_text
+            self.display.matrix,
+            self.display.font,
+            0,
+            0,
+            indicator_color,
+            page_indicator_text,
         )
         text_x = (self.display.matrix.width - text_length) // 2
         text_y = self.display.matrix.height - 4  # near the bottom
@@ -101,16 +111,16 @@ class MasterApp:
         latest_inputs = self.input_handler.get_latest_inputs()
         if any(latest_inputs.values()):
             self.last_input_time = time.time()
-        #print(latest_inputs)
-        if latest_inputs['up_pressed']:
+        # print(latest_inputs)
+        if latest_inputs["up_pressed"]:
             self.current_index = (self.current_index - 1) % len(self.applets)
-        elif latest_inputs['down_pressed']:
+        elif latest_inputs["down_pressed"]:
             self.current_index = (self.current_index + 1) % len(self.applets)
-        elif latest_inputs['left_pressed']:
+        elif latest_inputs["left_pressed"]:
             if self.page_index > 0:
                 self.page_index -= 1
                 self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
-        elif latest_inputs['right_pressed']:
+        elif latest_inputs["right_pressed"]:
             if (self.page_index + 1) * self.MAX_ITEMS_PER_PAGE < len(self.applets):
                 self.page_index += 1
                 self.current_index = self.page_index * self.MAX_ITEMS_PER_PAGE
@@ -120,7 +130,9 @@ class MasterApp:
         if self.is_applet_loaded(applet_name):
             applet = self.applets[applet_name]["instance"]
             return applet
-        self.error(f"get_applet_instance_by_name failed! Applet {applet_name} is not loaded!")
+        self.error(
+            f"get_applet_instance_by_name failed! Applet {applet_name} is not loaded!"
+        )
         return
 
     def create_applet_info_applet(self) -> None:
@@ -130,22 +142,20 @@ class MasterApp:
         selected_applet_config_json = self.applets[selected_applet_name]
         # going to add the name to the config here as it is not in (because it's the dict key :D )
         selected_applet_config_json["name"] = selected_applet_name
-        #configuration = self.applets[selected_applet_name]
+        # configuration = self.applets[selected_applet_name]
         view_applet_information_applet = AppletInformationViewer(
-            display=self.display, 
+            display=self.display,
             input_handler=self.input_handler,
-            applet_config=selected_applet_config_json
+            applet_config=selected_applet_config_json,
         )
         return view_applet_information_applet
 
     def create_settings_applet(self) -> SettingsApplet:
         """Open the settings applet"""
         settings_applet = SettingsApplet(
-            display=self.display,
-            input_handler=self.input_handler
+            display=self.display, input_handler=self.input_handler
         )
         return settings_applet
-
 
     def launch_applet(self, applet: Applet) -> None:
         try:
@@ -156,7 +166,7 @@ class MasterApp:
             applet.stop()
             self.display.matrix.Clear()
             self.input_handler.exit_requested = False
-            self.last_input_time = time.time()        
+            self.last_input_time = time.time()
 
     def create_selected_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
@@ -187,12 +197,20 @@ class MasterApp:
                 selected_applet_type = getattr(AppletClass, class_name)
                 # Instantiate the applet's main class
                 # with the required parameter 'self.display' (reference to the matrix)
-                selected_applet = selected_applet_type(display=self.display, options=options, input_handler=self.input_handler)
+                selected_applet = selected_applet_type(
+                    display=self.display,
+                    options=options,
+                    input_handler=self.input_handler,
+                )
 
                 self.applets[applet_name]["instance"] = selected_applet
-                self.log(f"Dynamically imported class {class_name} from module {module_path}")
+                self.log(
+                    f"Dynamically imported class {class_name} from module {module_path}"
+                )
             else:
-                self.error(f"The class '{class_name}' is not found in the module '{module_path}'")
+                self.error(
+                    f"The class '{class_name}' is not found in the module '{module_path}'"
+                )
                 return
 
         return selected_applet
@@ -211,11 +229,11 @@ class MasterApp:
             # os.path.isdir() checks if the full path is a directory
             # don't try to add the 1 applet!!!
             if os.path.isdir(full_path) and item not in [
-                "__pycache__", 
-                "template_applet", 
-                "applet_information_viewer", 
+                "__pycache__",
+                "template_applet",
+                "applet_information_viewer",
                 "settings_applet",
-                "idle_applet"
+                "idle_applet",
             ]:
                 folders.append(full_path)
 
@@ -231,12 +249,16 @@ class MasterApp:
                     name = config_data.get("name", "No Name Provided")
                     # Extracting the desired fields
                     applets[name] = {
-                        "description": config_data.get("description", "No Description Provided"),
+                        "description": config_data.get(
+                            "description", "No Description Provided"
+                        ),
                         "version": config_data.get("version", "No Version Provided"),
                         "author": config_data.get("author", "No Author Provided"),
                         "path": folder,
                         "options": config_data.get("options", {}),
-                        "class_name": config_data.get("class_name", "No Classname Provided"),
+                        "class_name": config_data.get(
+                            "class_name", "No Classname Provided"
+                        ),
                         "module_path": os.path.join(folder, "main.py"),
                     }
 
@@ -260,7 +282,10 @@ class MasterApp:
     def is_applet_loaded(self, applet_name: str) -> bool:
         """Determine whether an applet has already been dynamically imported"""
         # Check if "instance" key exists, and if it isn't null
-        if self.applets[applet_name].get("instance") and self.applets[applet_name]["instance"]:
+        if (
+            self.applets[applet_name].get("instance")
+            and self.applets[applet_name]["instance"]
+        ):
             return True
         else:
             return False
@@ -282,12 +307,12 @@ class MasterApp:
             # check for idle time - should we display idle applet?
             if time.time() - self.last_input_time > self.IDLE_SCREEN_THRESHOLD_SECONDS:
                 idle_applet = IdleApplet(
-                    display=self.display,
-                    input_handler=self.input_handler
+                    display=self.display, input_handler=self.input_handler
                 )
                 self.launch_applet(idle_applet)
 
             time.sleep(0.1)
+
 
 def find_xbox_controller() -> str:
     """Find xbox controller, return the path e.g. /dev/input/eventX"""
@@ -297,6 +322,7 @@ def find_xbox_controller() -> str:
         if any(keyword in device.name.lower() for keyword in ["xbox", "x-box"]):
             return device.path
     return None
+
 
 if __name__ == "__main__":
     if os.geteuid() != 0:
@@ -310,7 +336,9 @@ if __name__ == "__main__":
     applets_subdirectory = "applets"
 
     # Construct the full path to the target subdirectory
-    applets_root_directory = os.path.join(current_script_directory, applets_subdirectory)
+    applets_root_directory = os.path.join(
+        current_script_directory, applets_subdirectory
+    )
 
     # here is our ONLY matrix display ever instantiated - will be passed through
     display = MatrixDisplay()

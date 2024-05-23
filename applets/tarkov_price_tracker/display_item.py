@@ -1,5 +1,6 @@
 from typing import Optional, Dict
 
+
 class DisplayItem:
     """Represent a 64x16 row on the matrix"""
 
@@ -15,10 +16,13 @@ class DisplayItem:
     @staticmethod
     def get_highest_trader_price(data: Dict) -> int:
         """Get the highest price offered by a trader for a given item"""
-        item_name = data.get("data", {}).get("items", [])[0].get("shortName")
         items = data.get("data", {}).get("items", [])
         max_price = max(
-            (offer.get("price", 0) for item in items for offer in item.get("sellFor", [])),
+            (
+                offer.get("price", 0)
+                for item in items
+                for offer in item.get("sellFor", [])
+            ),
             default=-1,
         )
         return max_price

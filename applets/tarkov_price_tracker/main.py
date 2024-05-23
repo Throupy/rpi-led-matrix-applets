@@ -3,7 +3,7 @@ import os
 import requests
 from typing import List, Optional, Dict
 from PIL import Image
-from matrix.matrix_display import MatrixDisplay, graphics
+from matrix.matrix_display import graphics
 from matrix.colours import Colours
 from applets.base_applet import Applet
 from applets.tarkov_price_tracker.display_item import DisplayItem
@@ -64,7 +64,9 @@ class TarkovPriceTracker(Applet):
             query = generate_query(item_name)
             result = self.run_query(query)
             if not result:
-                self.error("Something went wrong when fetching the data - result was None")
+                self.error(
+                    "Something went wrong when fetching the data - result was None"
+                )
                 return
             display_item = DisplayItem.from_graphql(result)
             if display_item:
@@ -88,13 +90,20 @@ class TarkovPriceTracker(Applet):
             if item.change_last_48h_percent is not None:
                 change_text = f"{item.change_last_48h_percent:+.1f}%"
                 text = f"{short_price} {change_text}"
-                color = Colours.RED if item.change_last_48h_percent < 0 else Colours.GREEN
+                color = (
+                    Colours.RED if item.change_last_48h_percent < 0 else Colours.GREEN
+                )
             else:
                 text = f"{short_price} TRADER"
                 color = Colours.GREEN
 
             graphics.DrawText(
-                self.display.offscreen_canvas, self.display.font, 18, (index * 16) + 12, color, text
+                self.display.offscreen_canvas,
+                self.display.font,
+                18,
+                (index * 16) + 12,
+                color,
+                text,
             )
 
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
@@ -113,11 +122,15 @@ class TarkovPriceTracker(Applet):
                 self.fetch_items()
                 self.last_fetch_time = current_time
 
-            if current_time - self.last_switch_time >= 5 or latest_inputs.get("select_pressed"):
+            if current_time - self.last_switch_time >= 5 or latest_inputs.get(
+                "select_pressed"
+            ):
                 start_index = self.current_page_index * 4
                 end_index = start_index + 4
                 self.display_items(self.items[start_index:end_index])
-                self.current_page_index = (self.current_page_index + 1) % ((len(self.items) + 3) // 4)
+                self.current_page_index = (self.current_page_index + 1) % (
+                    (len(self.items) + 3) // 4
+                )
                 self.last_switch_time = current_time
 
             time.sleep(0.1)

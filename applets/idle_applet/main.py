@@ -1,10 +1,9 @@
 import time
-import random
-import math
 import psutil
-from matrix.matrix_display import MatrixDisplay, graphics
+from matrix.matrix_display import MatrixDisplay
 from matrix.colours import Colours
 from applets.base_applet import Applet
+
 
 class IdleApplet(Applet):
     def __init__(self, display: MatrixDisplay, **kwargs) -> None:
@@ -18,11 +17,7 @@ class IdleApplet(Applet):
         self.display.matrix.Clear()
         time_string = f"{h:02}:{m:02}:{s:02}"
 
-        self.display.draw_centered_text(
-            time_string,
-            Colours.WHITE_MUTED,
-            start_y=16
-        )
+        self.display.draw_centered_text(time_string, Colours.WHITE_MUTED, start_y=16)
         # Swap the offscreen canvas to display the drawn clock
         self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
 
@@ -39,8 +34,7 @@ class IdleApplet(Applet):
             self.draw_digital_clock()
             # draw the system uptime
             self.display.draw_centered_text(
-                f"System Uptime: {self.uptime_seconds:.0f}s", 
-                Colours.WHITE_MUTED
+                f"System Uptime: {self.uptime_seconds:.0f}s", Colours.WHITE_MUTED
             )
 
             self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)

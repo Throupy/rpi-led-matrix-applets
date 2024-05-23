@@ -1,11 +1,7 @@
-import random
-import time
 import os
 import qrcode
 import hashlib
 from PIL import Image
-from typing import Dict
-from matrix.matrix_display import MatrixDisplay, graphics
 from applets.base_applet import Applet
 
 
@@ -34,7 +30,7 @@ class QRCodeGenerator(Applet):
                 version=1,
                 error_correction=qrcode.constants.ERROR_CORRECT_L,
                 box_size=self.qr_box_size,
-                border=self.qr_border_width
+                border=self.qr_border_width,
             )
             qr.add_data(data)
             qr.make(fit=True)
@@ -54,7 +50,9 @@ class QRCodeGenerator(Applet):
         image = image.convert("RGB")
         self.display.offscreen_canvas.Clear()
         self.display.offscreen_canvas.SetImage(image, 0, 0)
-        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+            self.display.offscreen_canvas
+        )
         # still need this for interrupt handling
         while not self.input_handler.exit_requested:
             pass
