@@ -75,7 +75,7 @@ class MatrixDisplay:
             start_y: where to draw the text on y axis - if not specified then it will be centered
         """
         # Split the message into lines if it's too long
-        wrapped_text = textwrap.wrap(text, width=16)  # Adjust width as necessary
+        wrapped_text = textwrap.wrap(text, width=14)  # Adjust width as necessary
         total_height = len(wrapped_text) * (
             self.font.height + line_spacing
         )  # Assuming 2 pixels spacing between lines

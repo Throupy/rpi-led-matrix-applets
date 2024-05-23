@@ -9,6 +9,7 @@ from textwrap import wrap
 from matrix.matrix_display import MatrixDisplay, graphics
 from matrix.colours import Colours
 from applets.base_applet import Applet
+from applets.applet_information_viewer.main import AppletInformationViewer
 from input_handlers.xbox_controller import Controller
 from input_handlers.keyboard import Keyboard
 from input_handlers.base_input_handler import BaseInputHandler
@@ -116,6 +117,27 @@ class MasterApp:
         self.error(f"get_applet_instance_by_name failed! Applet {applet_name} is not loaded!")
         return
 
+    def view_applet_information(self) -> None:
+        """Open the view applet applet with the selected applet"""
+        selected_applet_name = list(self.applets.keys())[self.current_index]
+        # get configuration file for applet
+        selected_applet_config_json = self.applets[selected_applet_name]
+        #configuration = self.applets[selected_applet_name]
+        view_applet_information_applet = AppletInformationViewer(
+            display=self.display, 
+            input_handler=self.input_handler,
+            applet_config=selected_applet_config_json
+        )
+
+        try:
+            view_applet_information_applet.start()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            view_applet_information_applet.stop()
+            self.display.matrix.Clear()
+            self.input_handler.exit_requested = False
+
     def select_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
         selected_applet = None
@@ -176,8 +198,8 @@ class MasterApp:
             # os.path.join() creates a full path by joining directory and item
             full_path = os.path.join(self.applets_root_directory, item)
             # os.path.isdir() checks if the full path is a directory
-            # don't try to add the template applet!!!
-            if os.path.isdir(full_path) and item not in ["__pycache__", "template_applet"]:
+            # don't try to add the 1 applet!!!
+            if os.path.isdir(full_path) and item not in ["__pycache__", "template_applet", "applet_information_viewer"]:
                 folders.append(full_path)
 
         # For now, sort alphabetically. This controls the order at which
@@ -228,7 +250,6 @@ class MasterApp:
 
     def run(self) -> None:
         """Run the master application"""
-        # TODO: This is only temporary, @Chadders you said something about a controller system?
         # DONE: Add directory based applets with separate config files, and dynamic applet importing
         self.get_applets_information()
         while True:
@@ -236,6 +257,8 @@ class MasterApp:
             self.navigate_menu()
             if self.input_handler.select_pressed:
                 self.select_applet()
+            if self.input_handler.x_pressed:
+                self.view_applet_information()
             time.sleep(0.1)
 
 def find_xbox_controller() -> str:
