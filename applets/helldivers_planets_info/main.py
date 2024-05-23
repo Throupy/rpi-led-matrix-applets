@@ -49,10 +49,10 @@ class HelldiversPlanetsInfo(Applet):
 
         # Draw a progress bar
         self.display.draw_progress_bar(
-            4,
-            12,
             planet.percentage_liberated,
-            planet.colour
+            planet.colour,
+            x=4,
+            y=12,
         )
 
         # Display the liberation percentage underneath the progress bar

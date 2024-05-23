@@ -11,6 +11,7 @@ from matrix.colours import Colours
 from applets.base_applet import Applet
 from applets.applet_information_viewer.main import AppletInformationViewer
 from applets.settings_applet.main import SettingsApplet
+from applets.idle_applet.main import IdleApplet
 from input_handlers.xbox_controller import Controller
 from input_handlers.keyboard import Keyboard
 from input_handlers.base_input_handler import BaseInputHandler
@@ -30,6 +31,7 @@ class MasterApp:
         self.page_index = 0
         self.display = _display
         self.input_handler = _input_handler
+        self.last_input_time = time.time()
 
     @staticmethod
     def log(message: str) -> None:
@@ -96,6 +98,8 @@ class MasterApp:
     def navigate_menu(self) -> None:
         """Change current index, representing menu navigation"""
         latest_inputs = self.input_handler.get_latest_inputs()
+        if any(latest_inputs.values()):
+            self.last_input_time = time.time()
         #print(latest_inputs)
         if latest_inputs['up_pressed']:
             self.current_index = (self.current_index - 1) % len(self.applets)
@@ -140,6 +144,7 @@ class MasterApp:
             view_applet_information_applet.stop()
             self.display.matrix.Clear()
             self.input_handler.exit_requested = False
+            self.last_input_time = time.time()
 
     def open_settings(self) -> None:
         """Open the settings applet"""
@@ -156,6 +161,7 @@ class MasterApp:
             settings_applet.stop()
             self.display.matrix.Clear()
             self.input_handler.exit_requested = False
+            self.last_input_time = time.time()
 
     def select_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
@@ -204,6 +210,7 @@ class MasterApp:
             selected_applet.stop()
             self.display.matrix.Clear()
             self.input_handler.exit_requested = False
+            self.last_input_time = time.time()
 
     def get_applets_information(self) -> Dict[str, Dict]:
         """Retrieve information about applets from the config file in each applet's directory"""
@@ -218,8 +225,13 @@ class MasterApp:
             full_path = os.path.join(self.applets_root_directory, item)
             # os.path.isdir() checks if the full path is a directory
             # don't try to add the 1 applet!!!
-            if os.path.isdir(full_path) and \
-                item not in ["__pycache__", "template_applet", "applet_information_viewer", "settings_applet"]:
+            if os.path.isdir(full_path) and item not in [
+                "__pycache__", 
+                "template_applet", 
+                "applet_information_viewer", 
+                "settings_applet",
+                "idle_applet"
+            ]:
                 folders.append(full_path)
 
         # For now, sort alphabetically. This controls the order at which
@@ -281,6 +293,23 @@ class MasterApp:
                 self.view_applet_information()
             if self.input_handler.y_pressed:
                 self.open_settings()
+
+            # check for idle time - should we display idle applet?
+            if time.time() - self.last_input_time > 10:
+                idle_applet = IdleApplet(
+                    display=self.display,
+                    input_handler=self.input_handler
+                )
+                try:
+                    idle_applet.start()
+                except KeyboardInterrupt:
+                    pass
+                finally:
+                    idle_applet.stop()
+                    self.display.matrix.Clear()
+                    self.input_handler.exit_requested = False
+                    self.last_input_time = time.time()  # Reset idle timer after idling
+
             time.sleep(0.1)
 
 def find_xbox_controller() -> str:
