@@ -259,6 +259,8 @@ class MasterApp:
                 self.select_applet()
             if self.input_handler.x_pressed:
                 self.view_applet_information()
+            if self.input_handler.y_pressed:
+                print("Y pressed - functionality to come")
             time.sleep(0.1)
 
 def find_xbox_controller() -> str:
