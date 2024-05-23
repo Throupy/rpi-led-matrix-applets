@@ -26,6 +26,7 @@ class MasterApp:
         # so we don't build the app until it's selected
         self.applets_root_directory = _applets_root_directory
         self.MAX_ITEMS_PER_PAGE = 2
+        self.IDLE_SCREEN_THRESHOLD_SECONDS = 10
         self.applets = self.get_applets_information()
         self.current_index = 0
         self.page_index = 0
@@ -295,7 +296,7 @@ class MasterApp:
                 self.open_settings()
 
             # check for idle time - should we display idle applet?
-            if time.time() - self.last_input_time > 10:
+            if time.time() - self.last_input_time > self.IDLE_SCREEN_THRESHOLD_SECONDS:
                 idle_applet = IdleApplet(
                     display=self.display,
                     input_handler=self.input_handler
