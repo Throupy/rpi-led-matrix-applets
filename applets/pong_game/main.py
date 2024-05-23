@@ -5,6 +5,7 @@ from rgbmatrix import graphics
 from matrix.colours import Colours
 from applets.base_applet import Applet
 
+
 class PongGame(Applet):
     """PongGame applet definition"""
 
@@ -28,7 +29,10 @@ class PongGame(Applet):
     def reset_game(self) -> None:
         """Reset the game state"""
         self.ball_pos = [self.width // 2, self.height // 2]
-        self.ball_dir = [random.choice([-self.ball_speed, self.ball_speed]), random.choice([-self.ball_speed, self.ball_speed])]
+        self.ball_dir = [
+            random.choice([-self.ball_speed, self.ball_speed]),
+            random.choice([-self.ball_speed, self.ball_speed]),
+        ]
         self.player1_pos = self.height // 2 - self.paddle_height // 2
         self.player2_pos = self.height // 2 - self.paddle_height // 2
 
@@ -40,19 +44,30 @@ class PongGame(Applet):
             self.ball_pos[1] += self.ball_dir[1]
 
             # Ball collision with top and bottom walls
-            if self.ball_pos[1] <= 1 or self.ball_pos[1] >= self.height - self.ball_size - 1:
+            if (
+                self.ball_pos[1] <= 1
+                or self.ball_pos[1] >= self.height - self.ball_size - 1
+            ):
                 self.ball_dir[1] = -self.ball_dir[1]
 
             # Ball collision with paddles
             if self.ball_pos[0] <= self.paddle_thickness:
-                if self.player1_pos <= self.ball_pos[1] <= self.player1_pos + self.paddle_height:
+                if (
+                    self.player1_pos
+                    <= self.ball_pos[1]
+                    <= self.player1_pos + self.paddle_height
+                ):
                     self.ball_dir[0] = -self.ball_dir[0]
                 else:
                     self.score[1] += 1
                     self.reset_game()
 
             if self.ball_pos[0] >= self.width - self.ball_size - self.paddle_thickness:
-                if self.player2_pos <= self.ball_pos[1] <= self.player2_pos + self.paddle_height:
+                if (
+                    self.player2_pos
+                    <= self.ball_pos[1]
+                    <= self.player2_pos + self.paddle_height
+                ):
                     self.ball_dir[0] = -self.ball_dir[0]
                 else:
                     self.score[0] += 1
@@ -65,13 +80,19 @@ class PongGame(Applet):
             if self.input_handler.up_pressed:
                 self.player1_pos = max(1, self.player1_pos - self.player_speed)
             if self.input_handler.down_pressed:
-                self.player1_pos = min(self.height - self.paddle_height - 1, self.player1_pos + self.player_speed)
+                self.player1_pos = min(
+                    self.height - self.paddle_height - 1,
+                    self.player1_pos + self.player_speed,
+                )
 
             # Move paddle2 (AI) to follow the ball
             if self.ball_pos[1] < self.player2_pos + self.paddle_height // 2:
                 self.player2_pos = max(1, self.player2_pos - self.ai_speed)
             elif self.ball_pos[1] > self.player2_pos + self.paddle_height // 2:
-                self.player2_pos = min(self.height - self.paddle_height - 1, self.player2_pos + self.ai_speed)
+                self.player2_pos = min(
+                    self.height - self.paddle_height - 1,
+                    self.player2_pos + self.ai_speed,
+                )
 
     def display_game(self) -> None:
         """Display the game on the matrix"""
@@ -79,28 +100,84 @@ class PongGame(Applet):
 
         # Draw the border
         for x in range(self.width):
-            self.offscreen_canvas.SetPixel(x, 0, Colours.WHITE_NORMAL.red, Colours.WHITE_NORMAL.green, Colours.WHITE_NORMAL.blue)
-            self.offscreen_canvas.SetPixel(x, self.height - 1, Colours.WHITE_NORMAL.red, Colours.WHITE_NORMAL.green, Colours.WHITE_NORMAL.blue)
+            self.offscreen_canvas.SetPixel(
+                x,
+                0,
+                Colours.WHITE_NORMAL.red,
+                Colours.WHITE_NORMAL.green,
+                Colours.WHITE_NORMAL.blue,
+            )
+            self.offscreen_canvas.SetPixel(
+                x,
+                self.height - 1,
+                Colours.WHITE_NORMAL.red,
+                Colours.WHITE_NORMAL.green,
+                Colours.WHITE_NORMAL.blue,
+            )
         for y in range(self.height):
-            self.offscreen_canvas.SetPixel(0, y, Colours.WHITE_NORMAL.red, Colours.WHITE_NORMAL.green, Colours.WHITE_NORMAL.blue)
-            self.offscreen_canvas.SetPixel(self.width - 1, y, Colours.WHITE_NORMAL.red, Colours.WHITE_NORMAL.green, Colours.WHITE_NORMAL.blue)
+            self.offscreen_canvas.SetPixel(
+                0,
+                y,
+                Colours.WHITE_NORMAL.red,
+                Colours.WHITE_NORMAL.green,
+                Colours.WHITE_NORMAL.blue,
+            )
+            self.offscreen_canvas.SetPixel(
+                self.width - 1,
+                y,
+                Colours.WHITE_NORMAL.red,
+                Colours.WHITE_NORMAL.green,
+                Colours.WHITE_NORMAL.blue,
+            )
 
         # Draw the ball
         for dx in range(self.ball_size):
             for dy in range(self.ball_size):
-                self.offscreen_canvas.SetPixel(self.ball_pos[0] + dx, self.ball_pos[1] + dy, Colours.BLUE.red, Colours.BLUE.green, Colours.BLUE.blue)
+                self.offscreen_canvas.SetPixel(
+                    self.ball_pos[0] + dx,
+                    self.ball_pos[1] + dy,
+                    Colours.BLUE.red,
+                    Colours.BLUE.green,
+                    Colours.BLUE.blue,
+                )
 
         # Draw the paddles
         for dy in range(self.paddle_height):
             for px in range(self.paddle_thickness):
-                self.offscreen_canvas.SetPixel(1 + px, self.player1_pos + dy, Colours.GREEN.red, Colours.GREEN.green, Colours.GREEN.blue)
-                self.offscreen_canvas.SetPixel(self.width - 2 - px, self.player2_pos + dy, Colours.GREEN.red, Colours.GREEN.green, Colours.GREEN.blue)
+                self.offscreen_canvas.SetPixel(
+                    1 + px,
+                    self.player1_pos + dy,
+                    Colours.GREEN.red,
+                    Colours.GREEN.green,
+                    Colours.GREEN.blue,
+                )
+                self.offscreen_canvas.SetPixel(
+                    self.width - 2 - px,
+                    self.player2_pos + dy,
+                    Colours.GREEN.red,
+                    Colours.GREEN.green,
+                    Colours.GREEN.blue,
+                )
 
         # Draw the scores
         score_text = f"{self.score[0]} - {self.score[1]}"
-        text_length = graphics.DrawText(self.offscreen_canvas, self.display.font, 0, 0, Colours.WHITE_NORMAL, score_text)
+        text_length = graphics.DrawText(
+            self.offscreen_canvas,
+            self.display.font,
+            0,
+            0,
+            Colours.WHITE_NORMAL,
+            score_text,
+        )
         text_x = (self.width - text_length) // 2  # Center the text horizontally
-        graphics.DrawText(self.offscreen_canvas, self.display.font, text_x, 8, Colours.WHITE_NORMAL, score_text)  # Adjust Y position as needed
+        graphics.DrawText(
+            self.offscreen_canvas,
+            self.display.font,
+            text_x,
+            8,
+            Colours.WHITE_NORMAL,
+            score_text,
+        )  # Adjust Y position as needed
 
         self.display.matrix.SwapOnVSync(self.offscreen_canvas)
         time.sleep(0.025)

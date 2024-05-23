@@ -4,6 +4,7 @@ import threading
 from evdev import InputDevice, categorize, ecodes, KeyEvent, AbsEvent
 from input_handlers.base_input_handler import BaseInputHandler
 
+
 class Controller(BaseInputHandler):
     DEAD_ZONE = 8000  # Define a dead zone threshold
 
@@ -28,17 +29,17 @@ class Controller(BaseInputHandler):
                     self._handle_abs_event(abs_event)
 
     def _handle_key_event(self, key_event: KeyEvent) -> None:
-        if 'BTN_SOUTH' in key_event.keycode:  # A button
+        if "BTN_SOUTH" in key_event.keycode:  # A button
             self.select_pressed = key_event.keystate == KeyEvent.key_down
-        elif 'BTN_EAST' in key_event.keycode:  # B button
+        elif "BTN_EAST" in key_event.keycode:  # B button
             self.back_pressed = key_event.keystate == KeyEvent.key_down
             if key_event.keystate == KeyEvent.key_down:
                 self.exit_requested = True
         # B button is east, OK. A button is south, OK, makes sense.
-        # surely X button is west, right? Nope, it's north :clown: 
-        elif 'BTN_NORTH' in key_event.keycode: # X button
+        # surely X button is west, right? Nope, it's north :clown:
+        elif "BTN_NORTH" in key_event.keycode:  # X button
             self.x_pressed = key_event.keystate == KeyEvent.key_down
-        elif 'BTN_WEST' in key_event.keycode: # Y button
+        elif "BTN_WEST" in key_event.keycode:  # Y button
             self.y_pressed = key_event.keystate == KeyEvent.key_down
 
     def _handle_abs_event(self, abs_event: AbsEvent) -> None:

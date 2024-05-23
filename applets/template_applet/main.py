@@ -1,8 +1,6 @@
 import random
 import time
-import os
-from typing import Dict
-from matrix.matrix_display import MatrixDisplay, graphics
+from matrix.matrix_display import graphics
 from applets.base_applet import Applet
 
 
@@ -27,7 +25,9 @@ class TemplateApplet(Applet):
                 18,
                 32,
                 graphics.Color(
-                    random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+                    random.randint(0, 255),
+                    random.randint(0, 255),
+                    random.randint(0, 255),
                 ),
                 text,
             )

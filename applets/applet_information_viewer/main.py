@@ -1,10 +1,9 @@
-import random
+"""AppletInformationViewer implementation"""
+
 import time
-import os
-from typing import Dict
-from matrix.matrix_display import MatrixDisplay, graphics
-from matrix.colours import Colours
+
 from applets.base_applet import Applet
+from matrix.colours import Colours
 
 
 class AppletInformationViewer(Applet):
@@ -30,22 +29,19 @@ class AppletInformationViewer(Applet):
         while not self.input_handler.exit_requested:
             current_time = time.time()
             latest_inputs = self.input_handler.get_latest_inputs()
-            if current_time - self.last_switch_time >= 5 or latest_inputs.get("select_pressed"):
+            if current_time - self.last_switch_time >= 5 or latest_inputs.get(
+                "select_pressed"
+            ):
                 self.display.matrix.Clear()
                 current_key = keys[self.current_index % len(keys)]
                 current_value = values[self.current_index % len(values)]
                 # Draw Title
                 self.display.draw_centered_text(
-                    current_key.title(),
-                    Colours.RED,
-                    start_y=7
+                    current_key.title(), Colours.RED, start_y=7
                 )
 
                 # Draw Value
-                self.display.draw_centered_text(
-                    current_value,  
-                    Colours.WHITE_MUTED
-                )
+                self.display.draw_centered_text(current_value, Colours.WHITE_MUTED)
                 self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
                 self.current_index += 1
                 self.last_switch_time = current_time

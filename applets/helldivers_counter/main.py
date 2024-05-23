@@ -1,8 +1,8 @@
 """Hell divers kill counter applet implementation"""
+
 import time
 import os
 import requests
-import json
 from typing import Tuple, Optional
 from PIL import Image
 from matrix.matrix_display import graphics
@@ -46,19 +46,23 @@ class HelldiversKillCounter(Applet):
                     and item[2] in list(range(200, 256))
                 ):
                     if "bugs" in image_path:
-                        new_data.append((
-                            Colours.TERMINID.red, 
-                            Colours.TERMINID.green, 
-                            Colours.TERMINID.blue, 
-                            item[3]
-                        ))  # orange
+                        new_data.append(
+                            (
+                                Colours.TERMINID.red,
+                                Colours.TERMINID.green,
+                                Colours.TERMINID.blue,
+                                item[3],
+                            )
+                        )  # orange
                     elif "bots" in image_path:
-                        new_data.append((
-                            Colours.AUTOMATON.red, 
-                            Colours.AUTOMATON.green, 
-                            Colours.AUTOMATON.blue, 
-                            item[3]
-                        ))  # red
+                        new_data.append(
+                            (
+                                Colours.AUTOMATON.red,
+                                Colours.AUTOMATON.green,
+                                Colours.AUTOMATON.blue,
+                                item[3],
+                            )
+                        )  # red
                 else:
                     new_data.append(item)
 
@@ -67,7 +71,9 @@ class HelldiversKillCounter(Applet):
             try:
                 image.save(bmp_path)
             except PermissionError:
-                print(f"Permission denied: Unable to save to {bmp_path}. Check perms and retry")
+                print(
+                    f"Permission denied: Unable to save to {bmp_path}. Check perms and retry"
+                )
                 raise
         return image
 
@@ -83,7 +89,7 @@ class HelldiversKillCounter(Applet):
                 f"Fetched data from the HellDivers API - bug count : bot count = {bugs} : {bots}"
             )
             return bugs, bots
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             self.display.show_message("Network error. Check your connection", "error")
             time.sleep(2)
             self.input_handler.exit_requested = True
@@ -136,13 +142,17 @@ class HelldiversKillCounter(Applet):
                 self.last_fetch_time = current_time
 
             if (
-                current_time - self.last_switch_time >= 5 
+                current_time - self.last_switch_time >= 5
                 or latest_inputs["select_pressed"]
             ):
                 self.current_image = (
-                    self.image_bots if self.current_image == self.image_bugs else self.image_bugs
+                    self.image_bots
+                    if self.current_image == self.image_bugs
+                    else self.image_bugs
                 )
-                current_text = self.bugs if self.current_image == self.image_bugs else self.bots
+                current_text = (
+                    self.bugs if self.current_image == self.image_bugs else self.bots
+                )
                 self.update_display(self.current_image, current_text)
                 self.last_switch_time = current_time
 

@@ -1,5 +1,6 @@
 from rgbmatrix import graphics
 
+
 # Define some preset colors
 class Colours:
     BLACK = graphics.Color(0, 0, 0)

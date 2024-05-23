@@ -4,6 +4,7 @@ import textwrap
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 from matrix.colours import Colours
 
+
 class MatrixDisplay:
     def __init__(self) -> None:
         """Initialise the MatrixDisplay"""
@@ -37,24 +38,21 @@ class MatrixDisplay:
         return width
 
     def draw_progress_bar(
-        self, 
-        progress_percentage: float, 
+        self,
+        progress_percentage: float,
         colour: graphics.Color,
-        x: int = 4, 
-        y: int = 4, 
-        width: int = 56, 
-        height:int = 4) -> None:
+        x: int = 4,
+        y: int = 4,
+        width: int = 56,
+        height: int = 4,
+    ) -> None:
         """Draw a progress bar to the canvas"""
         filled_section_width = int(width * progress_percentage / 100)
         # draw the filled bit of the bar
         for dx in range(filled_section_width):
             for dy in range(height):
                 self.offscreen_canvas.SetPixel(
-                    x + dx,
-                    y + dy,
-                    colour.red,
-                    colour.green,
-                    colour.blue
+                    x + dx, y + dy, colour.red, colour.green, colour.blue
                 )
         # now draw the empty part of hte bar
         for dx in range(filled_section_width, width):
@@ -62,14 +60,14 @@ class MatrixDisplay:
                 self.offscreen_canvas.SetPixel(
                     x + dx,
                     y + dy,
-                    max(0, colour.red - 175), 
-                    max(0, colour.green - 175), 
-                    max(0, colour.blue - 175)
+                    max(0, colour.red - 175),
+                    max(0, colour.green - 175),
+                    max(0, colour.blue - 175),
                 )
 
-
-
-    def draw_centered_text(self, text: str, color: graphics.Color, line_spacing: int = 2, **kwargs) -> None:
+    def draw_centered_text(
+        self, text: str, color: graphics.Color, line_spacing: int = 2, **kwargs
+    ) -> None:
         """Draw centered text to the matrix
         kwargs:
             start_y: where to draw the text on y axis - if not specified then it will be centered
@@ -82,9 +80,9 @@ class MatrixDisplay:
 
         # pass start_y to change where it starts on Y axis - if not specified then centre.
         # this is because we don't always want to centre on both axis
-        start_y = kwargs.get("start_y", (self.matrix.height - total_height) // 2 + self.font.height)
-
-
+        start_y = kwargs.get(
+            "start_y", (self.matrix.height - total_height) // 2 + self.font.height
+        )
 
         for line in wrapped_text:
             text_width = graphics.DrawText(
@@ -97,7 +95,9 @@ class MatrixDisplay:
             graphics.DrawText(self.offscreen_canvas, self.font, x, start_y, color, line)
             start_y += self.font.height + 2
 
-    def show_message(self, message: str = "Loading...", message_type: str = "loading") -> None:
+    def show_message(
+        self, message: str = "Loading...", message_type: str = "loading"
+    ) -> None:
         """Show a message of a given type e.g. error"""
         self.matrix.Clear()
         self.offscreen_canvas.Clear()
