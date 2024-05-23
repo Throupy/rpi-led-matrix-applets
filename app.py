@@ -10,6 +10,7 @@ from matrix.matrix_display import MatrixDisplay, graphics
 from matrix.colours import Colours
 from applets.base_applet import Applet
 from applets.applet_information_viewer.main import AppletInformationViewer
+from applets.settings_applet.main import SettingsApplet
 from input_handlers.xbox_controller import Controller
 from input_handlers.keyboard import Keyboard
 from input_handlers.base_input_handler import BaseInputHandler
@@ -140,6 +141,22 @@ class MasterApp:
             self.display.matrix.Clear()
             self.input_handler.exit_requested = False
 
+    def open_settings(self) -> None:
+        """Open the settings applet"""
+        settings_applet = SettingsApplet(
+            display=self.display,
+            input_handler=self.input_handler
+        )
+
+        try:
+            settings_applet.start()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            settings_applet.stop()
+            self.display.matrix.Clear()
+            self.input_handler.exit_requested = False
+
     def select_applet(self) -> None:
         """Select and build (instantiate) the selected applet"""
         selected_applet = None
@@ -201,7 +218,8 @@ class MasterApp:
             full_path = os.path.join(self.applets_root_directory, item)
             # os.path.isdir() checks if the full path is a directory
             # don't try to add the 1 applet!!!
-            if os.path.isdir(full_path) and item not in ["__pycache__", "template_applet", "applet_information_viewer"]:
+            if os.path.isdir(full_path) and \
+                item not in ["__pycache__", "template_applet", "applet_information_viewer", "settings_applet"]:
                 folders.append(full_path)
 
         # For now, sort alphabetically. This controls the order at which
@@ -262,7 +280,7 @@ class MasterApp:
             if self.input_handler.x_pressed:
                 self.view_applet_information()
             if self.input_handler.y_pressed:
-                print("Y pressed - functionality to come")
+                self.open_settings()
             time.sleep(0.1)
 
 def find_xbox_controller() -> str:

@@ -38,10 +38,10 @@ class MatrixDisplay:
 
     def draw_progress_bar(
         self, 
-        x: int, 
-        y: int, 
         progress_percentage: float, 
         colour: graphics.Color,
+        x: int = 4, 
+        y: int = 4, 
         width: int = 56, 
         height:int = 4) -> None:
         """Draw a progress bar to the canvas"""
