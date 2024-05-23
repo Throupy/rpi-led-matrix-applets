@@ -1,0 +1,7 @@
+{
+    "name": "Idle Applet",
+    "description": "App which runs when activity not detected for X seconds",
+    "version": "1.0",
+    "author": "Owen Throup",
+    "class_name": "IdleApplet"
+}

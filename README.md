@@ -141,8 +141,8 @@ The best way to see this in action is to just look at the `template_applet` dire
 ## Menu
 - [ ] Add theming system with customisable colours etc
 - [ ] Potentially implement threading for input handling + rendering (on one thread for simplicity), then everything else runs on a separate thread (such as API calls that could take up to a second etc), which will improve responsiveness
-- [ ] Add background/idle applet that loads after 5 mins idling on menu (configurable), could show clock / system uptime overlayed onto a GIF
-- [ ] Some form of brightness control (for the idle app), not sure if brightness can be changed after instantiating the matrix though...
+- [X] Add background/idle applet that loads after 5 mins idling on menu (configurable), could show clock / system uptime overlayed onto a GIF
+- [X] Some form of brightness control (for the idle app), not sure if brightness can be changed after instantiating the matrix though...
 - [X] Add support to view applet information (press X on controller) such as version, description, author etc
 - [ ] Add a border to the menu (can be part of theming feature)
 - [ ] Currently, it looks bad if the app takes like 1 second to load and you just get a tiny flicker of the loading screen. Maybe add a time threshold before the loading screen is presented?
