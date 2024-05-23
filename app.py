@@ -122,6 +122,8 @@ class MasterApp:
         selected_applet_name = list(self.applets.keys())[self.current_index]
         # get configuration file for applet
         selected_applet_config_json = self.applets[selected_applet_name]
+        # going to add the name to the config here as it is not in (because it's the dict key :D )
+        selected_applet_config_json["name"] = selected_applet_name
         #configuration = self.applets[selected_applet_name]
         view_applet_information_applet = AppletInformationViewer(
             display=self.display, 
