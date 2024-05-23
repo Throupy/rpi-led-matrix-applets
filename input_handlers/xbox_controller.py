@@ -38,6 +38,8 @@ class Controller(BaseInputHandler):
         # surely X button is west, right? Nope, it's north :clown: 
         elif 'BTN_NORTH' in key_event.keycode: # X button
             self.x_pressed = key_event.keystate == KeyEvent.key_down
+        elif 'BTN_WEST' in key_event.keycode: # Y button
+            self.y_pressed = key_event.keystate == KeyEvent.key_down
 
     def _handle_abs_event(self, abs_event: AbsEvent) -> None:
         if abs_event.event.code == ecodes.ABS_X:  # Left joystick horizontal movement

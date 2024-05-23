@@ -23,6 +23,10 @@ class Keyboard(BaseInputHandler):
                 self.right_pressed = True
             elif key == 'select':
                 self.select_pressed = True
+            elif key == 'x':
+                self.x_pressed = True
+            elif key == 'y':
+                self.y_pressed = True
             elif key == 'q':
                 self.exit_requested = True
                 break

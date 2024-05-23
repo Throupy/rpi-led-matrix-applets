@@ -8,6 +8,7 @@ class BaseInputHandler:
         self.right_pressed = False
         self.select_pressed = False
         self.x_pressed = False
+        self.y_pressed = False
         self.back_pressed = False
         self.exit_requested = False
 
@@ -19,6 +20,7 @@ class BaseInputHandler:
             'right_pressed': self.right_pressed,
             'select_pressed': self.select_pressed,
             'x_pressed': self.x_pressed,
+            'y_pressed': self.y_pressed,
             'back_pressed': self.back_pressed,
             'exit_requested': self.exit_requested,
         }
@@ -31,6 +33,7 @@ class BaseInputHandler:
             'right_pressed': False,
             'select_pressed': False,
             'x_pressed': False,
+            'y_pressed': False,
             'back_pressed': False,
             'exit_requested': False,
         }
@@ -48,6 +51,7 @@ class BaseInputHandler:
             'select_pressed': self.select_pressed,
             'back_pressed': self.back_pressed,
             'x_pressed': self.x_pressed,
+            'y_pressed': self.y_pressed,
             'exit_requested': self.exit_requested,
         }
 
