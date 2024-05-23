@@ -180,5 +180,5 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [X] Internet speed test
 - [ ] Controller Tester
 - [ ] Spotify Album Art
-- [ ] Background idling thing (clock + runtime potentially overlayed over minimalistic GIF)
+- [X] Background idling thing (clock + runtime potentially overlayed over minimalistic GIF)
 - [ ] Snake game
