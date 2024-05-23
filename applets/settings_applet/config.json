@@ -1,0 +1,7 @@
+{
+    "name": "Settings",
+    "description": "Configure app settings",
+    "version": "1.0",
+    "author": "Owen Throup",
+    "class_name": "SettingsApplet"
+}
