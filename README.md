@@ -142,7 +142,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [ ] Add theming system with customisable colours etc
 - [ ] Add background/idle applet that loads after 5 mins idling on menu (configurable), could show clock / system uptime overlayed onto a GIF
 - [ ] Some form of brightness control (for the idle app), not sure if brightness can be changed after instantiating the matrix though...
-- [ ] Add support to view applet information (press X on controller) such as version, description, author etc
+- [X] Add support to view applet information (press X on controller) such as version, description, author etc
 - [ ] Add a border to the menu (can be part of theming feature)
 - [ ] Currently, it looks bad if the app takes like 1 second to load and you just get a tiny flicker of the loading screen. Maybe add a time threshold before the loading screen is presented?
 - [ ] Press B (or CTRL+C, whatever) when in menu to quit application
@@ -151,6 +151,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [X] Some kind of Config class for an applet e.g. for the tarkov applet, I want to be able to specify what items to get the values for.
 - [X] Add an Applet template
 - [X] System Monitor - Scale between red and green for system usage
+- [ ] Applet Information Viewer - "Name" key isn't in the configuration. Look at the way applets are loaded in app.py. Ben can probably help
 - [X] Tarkov Price Tracker - Format price function to include millions
 - [X] Tarkov Price Tracker - When BMP files don't exist it goes crazy (on bens pi, works on my machine :nerd:)
 - [X] Tarkov Price Tracker - App takes long time to quit when B button pressed

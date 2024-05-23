@@ -34,6 +34,10 @@ class Controller(BaseInputHandler):
             self.back_pressed = key_event.keystate == KeyEvent.key_down
             if key_event.keystate == KeyEvent.key_down:
                 self.exit_requested = True
+        # B button is east, OK. A button is south, OK, makes sense.
+        # surely X button is west, right? Nope, it's north :clown: 
+        elif 'BTN_NORTH' in key_event.keycode: # X button
+            self.x_pressed = key_event.keystate == KeyEvent.key_down
 
     def _handle_abs_event(self, abs_event: AbsEvent) -> None:
         if abs_event.event.code == ecodes.ABS_X:  # Left joystick horizontal movement
