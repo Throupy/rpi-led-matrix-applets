@@ -152,7 +152,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [X] Some kind of Config class for an applet e.g. for the tarkov applet, I want to be able to specify what items to get the values for.
 - [X] Add an Applet template
 - [X] System Monitor - Scale between red and green for system usage
-- [ ] Applet Information Viewer - "Name" key isn't in the configuration. Look at the way applets are loaded in app.py. Ben can probably help
+- [X] Applet Information Viewer - "Name" key isn't in the configuration. Look at the way applets are loaded in app.py. Ben can probably help
 - [X] Tarkov Price Tracker - Format price function to include millions
 - [X] Tarkov Price Tracker - When BMP files don't exist it goes crazy (on bens pi, works on my machine :nerd:)
 - [X] Tarkov Price Tracker - App takes long time to quit when B button pressed
