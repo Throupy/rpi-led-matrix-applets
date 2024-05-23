@@ -169,6 +169,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [X] Improve README
 - [X] Add start() definition into README
 - [ ] Add documentation for each applet (e.g. what options it takes etc)
+- [ ] Add setup for input handling into README
 
 ## Other
 - [X] APIs - display error message if cannot get data for API for some reason e.g. no network connection
