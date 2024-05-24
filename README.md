@@ -173,7 +173,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 
 ## Other
 - [X] APIs - display error message if cannot get data for API for some reason e.g. no network connection
-- [ ] Use font.CharacterWidth in matrix_display.py to allow for height AND width scaling
+- [ ] Use font.CharacterWidth in matrix_display.py to allow for height AND width scaling (rabbit hole af)
 
 ## Input Handling
 - [X] Xbox Controller - support debouce (stop joystick movement causing multiple events)
