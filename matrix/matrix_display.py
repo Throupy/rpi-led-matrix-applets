@@ -19,22 +19,27 @@ class MatrixDisplay:
         options.drop_privileges = False
         self.load_font()
         self.matrix = RGBMatrix(options=options)
+        self.max_chars_per_line = self._get_max_chars_per_line()
         self.offscreen_canvas = self.matrix.CreateFrameCanvas()
 
-    def load_font(self, font_name: str = "tom-thumb-fixed.bdf") -> graphics.Font:
-        """Load a font, given the font name"""
-        font = graphics.Font()
-        font.LoadFont(f"matrix/fonts/{font_name}")
-        self.font = font
+    def _get_max_chars_per_line(self) -> int:
+        """Calculate the maximum number of characters per line that fit in the matrix width"""
+        max_char_width = self.font.CharacterWidth(ord("W"))
+        return self.matrix.width // max_char_width
 
-    @staticmethod
-    def _get_text_width(font: graphics.Font, text: str) -> int:
+    def get_text_width(self, text: str) -> int:
         """Calculate pixel width of given string.
         This is currently not utilised but may be used later on so leaving it in for now"""
         width = 0
         for char in text:
-            width += font.CharacterWidth(ord(char))
+            width += self.font.CharacterWidth(ord(char))
         return width
+
+    def load_font(self, font_name: str = "5x5.bdf") -> graphics.Font:
+        """Load a font, given the font name"""
+        font = graphics.Font()
+        font.LoadFont(f"matrix/fonts/{font_name}")
+        self.font = font
 
     def draw_progress_bar(
         self,
@@ -72,7 +77,7 @@ class MatrixDisplay:
             start_y: where to draw the text on y axis - if not specified then it will be centered
         """
         # Split the message into lines if it's too long
-        wrapped_text = textwrap.wrap(text, width=14)  # Adjust width as necessary
+        wrapped_text = textwrap.wrap(text, width=self.max_chars_per_line) 
         total_height = len(wrapped_text) * (
             self.font.height + line_spacing
         )  # Assuming 2 pixels spacing between lines
@@ -89,7 +94,7 @@ class MatrixDisplay:
             )
             # ^ Alternatively we could use the line below to reduce draw calls
             # (may be less CPU intensive when dealing with large amounts of DrawText calls)
-            # text_width = self._get_text_width(self.font, line)
+            # text_width = self.get_text_width(self.font, line)
             x = (self.matrix.width - text_width) // 2
             graphics.DrawText(self.offscreen_canvas, self.font, x, start_y, color, line)
             start_y += self.font.height + 2
