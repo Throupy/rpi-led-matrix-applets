@@ -21,7 +21,7 @@ class SystemMonitor(Applet):
             "RAM": f"{psutil.virtual_memory().percent}%",
             "Disk": f"{psutil.disk_usage('/').percent}%",
             "Uptime": f"{time.time() - psutil.boot_time():.0f}s",
-            "Processes": f"{len(psutil.pids())}",
+            "Procs.": f"{len(psutil.pids())}",
         }
         return stats
 

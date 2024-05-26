@@ -50,7 +50,7 @@ class MasterApp:
         print(f"[ERROR] [Menu] '{message}'")
 
     @staticmethod
-    def wrap_text(text: str, width: int) -> List[str]:
+    def wrap_menu_items_text(text: str, width: int) -> List[str]:
         """Wrap text to a specified width and add a marker at the start of the first line."""
         wrapped_lines = wrap(text, width)
         if wrapped_lines:
@@ -73,7 +73,8 @@ class MasterApp:
             # 0 in this loop, but 2 in the self.applets.
             i += start_index
             color = Colours.RED if i == self.current_index else Colours.WHITE_MUTED
-            wrapped_text = self.wrap_text(applet, 12)  # this is width
+            # Subtract 2 because of the '* ' prefix on menu items
+            wrapped_text = self.wrap_menu_items_text(applet, self.display.max_chars_per_line - 2)
             for line in wrapped_text:
                 graphics.DrawText(
                     self.display.matrix, self.display.font, 1, y_offset, color, line

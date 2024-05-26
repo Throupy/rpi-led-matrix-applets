@@ -38,8 +38,8 @@ class IdleApplet(Applet):
             )
 
             self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
-            self.uptime_seconds += 0.1
-            time.sleep(0.1)
+            self.uptime_seconds += 1
+            time.sleep(1)
 
     def stop(self) -> None:
         self.log("Stopping IdleApplet")
