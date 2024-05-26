@@ -32,6 +32,22 @@ class MyAwesomeApplet(Applet):
         super().init("Applet Name", *args, **kwargs)
 ```
 
+#### MatrixDisplay
+Each applet possesses a reference to the MatrixDisplay. Put simply, this controls writing / interacting with the LED matrix. Also, the matrix contains functionality for loading new fonts. Apps are tested with 5x5 fonts. You can load in larger fonts, however you may have to add additional wrapping / shortening methods for your applets. Other useful MatrixDisplay attributes include:
+```python
+class MatrixDisplay()
+...
+    # self.matrix is the reference to the actual RGBMatrix from hzeller's library. This is where you can find native attributes e.g. matrix.width,  matrix.height, matrix.options, etc.
+    self.matrix
+    # max chars per line indicates the max chars per line (who would have guessed) based on the current in-use font.
+    self.max_chars_per_line
+    # offscreen canvas is the canvas to which the MatrixDisplay class actually writes to
+    self.offscreen_canvas
+```
+There are methods within the class with are used for writing to the screen. E.g. `MatrixDisplay.draw_centered_text()`, or `MatrixDisplay.draw_progress_bar(). `. We are currently still writing these and adding additional checks as of 26/5/24.
+
+Finally, there are some helper functions such as `MatrixDisplay.show_message()` which can show an error / informational message on the matrix, as well as `MatrixDisplay.get_text_width()` which gets text width (surprise surprise).
+
 #### Resources Directory
 The BaseApplet (parent) creates a reference to a resources directory within the applet's directory. It is accessible through `self.resource_directory`, which will return the full filesystem path.
 ```python
