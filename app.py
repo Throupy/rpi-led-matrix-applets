@@ -31,7 +31,7 @@ class MasterApp:
         # so we don't build the app until it's selected
         self.applets_root_directory = _applets_root_directory
         self.MAX_ITEMS_PER_PAGE = 2
-        self.IDLE_SCREEN_THRESHOLD_SECONDS = 10
+        self.IDLE_SCREEN_THRESHOLD_SECONDS = 300
         self.applets = self.get_applets_information()
         self.current_index = 0
         self.page_index = 0
@@ -88,14 +88,7 @@ class MasterApp:
         ) // self.MAX_ITEMS_PER_PAGE
         page_indicator_text = f"[{self.page_index + 1}/{total_pages}]"
         indicator_color = Colours.WHITE_MUTED
-        text_length = graphics.DrawText(
-            self.display.matrix,
-            self.display.font,
-            0,
-            0,
-            indicator_color,
-            page_indicator_text,
-        )
+        text_length = self.display.get_text_width(page_indicator_text)
         text_x = (self.display.matrix.width - text_length) // 2
         text_y = self.display.matrix.height - 4  # near the bottom
         graphics.DrawText(
