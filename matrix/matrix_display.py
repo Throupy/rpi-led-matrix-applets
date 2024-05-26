@@ -81,7 +81,6 @@ class MatrixDisplay:
         total_height = len(wrapped_text) * (
             self.font.height + line_spacing
         )  # Assuming 2 pixels spacing between lines
-        print(f"{text} has line height of: {total_height}")
 
         # pass start_y to change where it starts on Y axis - if not specified then centre.
         # this is because we don't always want to centre on both axis
