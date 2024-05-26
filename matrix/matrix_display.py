@@ -89,12 +89,7 @@ class MatrixDisplay:
         )
 
         for line in wrapped_text:
-            text_width = graphics.DrawText(
-                self.offscreen_canvas, self.font, 0, start_y, Colours.BLACK, line
-            )
-            # ^ Alternatively we could use the line below to reduce draw calls
-            # (may be less CPU intensive when dealing with large amounts of DrawText calls)
-            # text_width = self.get_text_width(self.font, line)
+            text_width = self.get_text_width(line)
             x = (self.matrix.width - text_width) // 2
             graphics.DrawText(self.offscreen_canvas, self.font, x, start_y, color, line)
             start_y += self.font.height + 2
