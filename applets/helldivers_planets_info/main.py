@@ -62,11 +62,12 @@ class HelldiversPlanetsInfo(Applet):
             f"{planet.player_count} Active Helldivers", planet.colour, start_y=40
         )
 
-        self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
 
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
+        self.display.offscreen_canvas.Clear()
         # when the app is "loaded from memory" it messes with previous error handling
         # to prevent this, I have added a presence check on self.planets
         if not self.planets:
@@ -88,9 +89,9 @@ class HelldiversPlanetsInfo(Applet):
                 )
                 self.last_switch_time = current_time
 
-            time.sleep(0.1)
-
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
+

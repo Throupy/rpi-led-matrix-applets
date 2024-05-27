@@ -103,14 +103,7 @@ class HelldiversKillCounter(Applet):
         y_offset = (self.display.matrix.height - 32) // 4
         self.display.offscreen_canvas.SetImage(image.convert("RGB"), x_offset, y_offset)
 
-        text_width = graphics.DrawText(
-            self.display.offscreen_canvas,
-            self.display.font,
-            0,
-            0,
-            Colours.WHITE_NORMAL,
-            text,
-        )
+        text_width = self.display.get_text_width(text)
         text_x = (self.display.matrix.width - text_width) // 2
         text_y = y_offset + 32 + 10
 
@@ -130,6 +123,7 @@ class HelldiversKillCounter(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
+        self.display.offscreen_canvas.Clear()
         # when the app is "loaded from memory" it messes with previous error handlign
         # to prevent this, I have added a presence check on self.bots / self.bugs
         if not self.bots or not self.bugs:
@@ -156,12 +150,11 @@ class HelldiversKillCounter(Applet):
                 self.update_display(self.current_image, current_text)
                 self.last_switch_time = current_time
 
-            time.sleep(0.1)
-
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
         # need to handle destruction here..
         # @chadders recall our conversation about memory management
         # and see TODO in README.md

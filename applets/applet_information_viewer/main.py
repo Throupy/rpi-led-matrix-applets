@@ -21,6 +21,7 @@ class AppletInformationViewer(Applet):
         """Start the applet"""
         self.log("Starting")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
 
         # Filter the keys and values based on keys_to_show
         keys = [key for key in self.keys_to_show if key in self.applet_config]
@@ -42,13 +43,12 @@ class AppletInformationViewer(Applet):
 
                 # Draw Value
                 self.display.draw_centered_text(current_value, Colours.WHITE_MUTED)
-                self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+                self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
                 self.current_index += 1
                 self.last_switch_time = current_time
-
-            time.sleep(0.1)
 
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()

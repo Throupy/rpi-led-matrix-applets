@@ -75,7 +75,7 @@ class SpeedCheck(Applet):
         # Start the threads
         self.download_thread.start()
 
-        self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
 
         while self.test_running and not self.input_handler.exit_requested:
             # Calculate speed in megabits per second
@@ -123,3 +123,4 @@ class SpeedCheck(Applet):
             self.download_thread.join()
 
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
