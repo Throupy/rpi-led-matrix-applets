@@ -109,7 +109,6 @@ class MasterApp:
         latest_inputs = self.input_handler.get_latest_inputs()
         if any(latest_inputs.values()):
             self.last_input_time = time.time()
-        # print(latest_inputs)
         if latest_inputs["up_pressed"]:
             self.current_index = (self.current_index - 1) % len(self.applets)
         elif latest_inputs["down_pressed"]:
@@ -287,12 +286,10 @@ class MasterApp:
             and self.applets[applet_name]["instance"]
         ):
             return True
-        else:
-            return False
+        return False
 
     def run(self) -> None:
         """Run the master application"""
-        # DONE: Add directory based applets with separate config files, and dynamic applet importing
         self.get_applets_information()
         while True:
             self.display_menu()

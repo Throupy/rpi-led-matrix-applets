@@ -84,14 +84,7 @@ class SpeedCheck(Applet):
             self.display.offscreen_canvas.Clear()
             # Calculate colour based on speed
             colour = self.get_speed_color(speed_mbps)
-            text_width = graphics.DrawText(
-                self.display.offscreen_canvas,
-                self.display.font,
-                0,
-                0,
-                Colours.WHITE_NORMAL,
-                text,
-            )
+            text_width = self.display.get_text_width(text)
 
             text_x = (self.display.matrix.width - text_width) // 2
             text_y = self.display.matrix.height / 2

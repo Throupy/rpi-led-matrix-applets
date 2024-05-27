@@ -200,3 +200,6 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [ ] Spotify Album Art
 - [X] Background idling thing (clock + runtime potentially overlayed over minimalistic GIF)
 - [ ] Snake game
+
+## Bugs
+- [ ] Text wrapping inconsistent, see helldivers statistics loading page. Need to wrap on words not chars.

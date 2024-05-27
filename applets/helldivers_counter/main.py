@@ -103,17 +103,13 @@ class HelldiversKillCounter(Applet):
         y_offset = (self.display.matrix.height - 32) // 4
         self.display.offscreen_canvas.SetImage(image.convert("RGB"), x_offset, y_offset)
 
-        text_width = self.display.get_text_width(text)
-        text_x = (self.display.matrix.width - text_width) // 2
-        text_y = y_offset + 32 + 10
+        # 75% down from the top (make room for image)
+        offset_y = (self.display.matrix.height // 4) * 3 
 
-        graphics.DrawText(
-            self.display.offscreen_canvas,
-            self.display.font,
-            text_x,
-            text_y,
-            Colours.WHITE_NORMAL,
+        self.display.draw_centered_text(
             text,
+            Colours.WHITE_NORMAL,
+            start_y=offset_y
         )
 
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(

@@ -87,13 +87,13 @@ class TarkovPriceTracker(Applet):
             self.display.offscreen_canvas.SetImage(image.convert("RGB"), 0, index * 16)
             short_price = shorten_price(item.price)
             if item.change_last_48h_percent is not None:
-                change_text = f"{item.change_last_48h_percent:+.1f}%"
+                change_text = f"{abs(item.change_last_48h_percent):.1f}%"
                 text = f"{short_price} {change_text}"
                 color = (
                     Colours.RED if item.change_last_48h_percent < 0 else Colours.GREEN
                 )
             else:
-                text = f"{short_price} TRADER"
+                text = f"{short_price} TR."
                 color = Colours.GREEN
 
             graphics.DrawText(
