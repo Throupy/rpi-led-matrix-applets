@@ -75,7 +75,6 @@ class SpeedCheck(Applet):
         # Start the threads
         self.download_thread.start()
 
-        #self.display.matrix.Clear()
         self.display.offscreen_canvas.Clear()
 
         while self.test_running and not self.input_handler.exit_requested:

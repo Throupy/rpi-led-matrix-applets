@@ -18,7 +18,7 @@ class MatrixDisplay:
         options.hardware_mapping = "adafruit-hat-pwm"
         options.drop_privileges = False
         options.gpio_slowdown = 1
-        #options.show_refresh_rate = 1
+        options.show_refresh_rate = 0
         self.load_font()
         self.matrix = RGBMatrix(options=options)
         self.max_chars_per_line = self._get_max_chars_per_line()

@@ -47,8 +47,6 @@ class AppletInformationViewer(Applet):
                 self.current_index += 1
                 self.last_switch_time = current_time
 
-            #time.sleep(0.1)
-
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")

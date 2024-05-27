@@ -157,8 +157,8 @@ class MasterApp:
 
     def launch_applet(self, applet: Applet) -> None:
         try:
-            #self.display.matrix.Clear()
-            #self.display.offscreen_canvas.Clear()
+            self.display.matrix.Clear()
+            self.display.offscreen_canvas.Clear()
             applet.start()
         except KeyboardInterrupt:
             pass

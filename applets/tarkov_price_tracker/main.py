@@ -78,7 +78,6 @@ class TarkovPriceTracker(Applet):
                     )
             else:
                 self.log(f"No item found for {item_name}.")
-            #time.sleep(0.1)
 
     def display_items(self, items: List[DisplayItem]) -> None:
         """Update matrix display with multiple items' information"""
@@ -133,8 +132,6 @@ class TarkovPriceTracker(Applet):
                     (len(self.items) + 3) // 4
                 )
                 self.last_switch_time = current_time
-
-            #time.sleep(0.1)
 
     def stop(self) -> None:
         """Stop the applet"""

@@ -13,7 +13,6 @@ class SettingsApplet(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        self.display.matrix.Clear()
         self.display.offscreen_canvas.Clear()
         while not self.input_handler.exit_requested:
             latest_inputs = self.input_handler.get_latest_inputs()
@@ -39,7 +38,6 @@ class SettingsApplet(Applet):
             )
 
             self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
-            #time.sleep(0.1)
 
     def stop(self) -> None:
         """Stop the applet"""
