@@ -46,7 +46,9 @@ class SystemMonitor(Applet):
 
     def display_stats(self, stats: Dict[str, str]) -> None:
         """Display system statistics on the matrix"""
-        self.display.matrix.Clear()
+
+        self.display.offscreen_canvas.Clear()
+
         y_offset = 10  # lil bit down from the top
         label_colour = Colours.WHITE_NORMAL
 
@@ -81,12 +83,13 @@ class SystemMonitor(Applet):
             )
             y_offset += 10  # line height
 
-        self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
         time.sleep(1)
 
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
+        self.display.offscreen_canvas.Clear()
         while not self.input_handler.exit_requested:
             stats = self.fetch_stats()
             self.display_stats(stats)
@@ -95,3 +98,4 @@ class SystemMonitor(Applet):
         """Stop the applet"""
         self.log("Stopping")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()

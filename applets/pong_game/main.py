@@ -185,6 +185,7 @@ class PongGame(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting Pong Game")
+        self.display.offscreen_canvas.Clear()
         if not self.input_handler.is_controller():
             self.display.show_message("Controller required!", "error")
             time.sleep(2)
@@ -204,3 +205,4 @@ class PongGame(Applet):
         """Stop the applet"""
         self.log("Stopping Pong Game")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()

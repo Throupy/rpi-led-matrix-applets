@@ -19,10 +19,11 @@ class IdleApplet(Applet):
 
         self.display.draw_centered_text(time_string, Colours.WHITE_MUTED, start_y=16)
         # Swap the offscreen canvas to display the drawn clock
-        self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
 
     def start(self) -> None:
         self.log("Starting IdleApplet")
+        self.display.offscreen_canvas.Clear()
         # More resource-friendly to call psutil.boot_time() once and increment rather than
         # calling the method every second.
         self.uptime_seconds = time.time() - psutil.boot_time()
@@ -37,10 +38,11 @@ class IdleApplet(Applet):
                 f"System Uptime: {self.uptime_seconds:.0f}s", Colours.WHITE_MUTED
             )
 
-            self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+            self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
             self.uptime_seconds += 1
             time.sleep(1)
 
     def stop(self) -> None:
         self.log("Stopping IdleApplet")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()

@@ -61,7 +61,7 @@ class MasterApp:
 
     def display_menu(self) -> None:
         """Display the menu system on the RGB Matrix"""
-        self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
         y_offset = 10  # Start a bit down from the top
         start_index = self.page_index * self.MAX_ITEMS_PER_PAGE
         end_index = start_index + self.MAX_ITEMS_PER_PAGE
@@ -77,7 +77,7 @@ class MasterApp:
             wrapped_text = self.wrap_menu_items_text(applet, self.display.max_chars_per_line - 2)
             for line in wrapped_text:
                 graphics.DrawText(
-                    self.display.matrix, self.display.font, 1, y_offset, color, line
+                    self.display.offscreen_canvas, self.display.font, 1, y_offset, color, line
                 )
                 y_offset += 10  # this is for line height
             y_offset += 5  # Additional spacing between applets
@@ -92,12 +92,16 @@ class MasterApp:
         text_x = (self.display.matrix.width - text_length) // 2
         text_y = self.display.matrix.height - 4  # near the bottom
         graphics.DrawText(
-            self.display.matrix,
+            self.display.offscreen_canvas,
             self.display.font,
             text_x,
             text_y,
             indicator_color,
             page_indicator_text,
+        )
+
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+            self.display.offscreen_canvas
         )
 
     def navigate_menu(self) -> None:
@@ -153,12 +157,15 @@ class MasterApp:
 
     def launch_applet(self, applet: Applet) -> None:
         try:
+            #self.display.matrix.Clear()
+            #self.display.offscreen_canvas.Clear()
             applet.start()
         except KeyboardInterrupt:
             pass
         finally:
             applet.stop()
             self.display.matrix.Clear()
+            self.display.offscreen_canvas.Clear()
             self.input_handler.exit_requested = False
             self.last_input_time = time.time()
 
@@ -167,7 +174,6 @@ class MasterApp:
         selected_applet = None
         applet_name = list(self.applets.keys())[self.current_index]
 
-        self.display.matrix.Clear()
         self.display.show_message(f"Loading {applet_name}...", "loading")
 
         if self.is_applet_loaded(applet_name):
@@ -304,8 +310,6 @@ class MasterApp:
                     display=self.display, input_handler=self.input_handler
                 )
                 self.launch_applet(idle_applet)
-
-            time.sleep(0.1)
 
 
 def find_xbox_controller() -> str:

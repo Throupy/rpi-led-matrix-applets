@@ -17,6 +17,8 @@ class MatrixDisplay:
         options.parallel = 1
         options.hardware_mapping = "adafruit-hat-pwm"
         options.drop_privileges = False
+        options.gpio_slowdown = 1
+        #options.show_refresh_rate = 1
         self.load_font()
         self.matrix = RGBMatrix(options=options)
         self.max_chars_per_line = self._get_max_chars_per_line()
@@ -98,7 +100,6 @@ class MatrixDisplay:
         self, message: str = "Loading...", message_type: str = "loading"
     ) -> None:
         """Show a message of a given type e.g. error"""
-        self.matrix.Clear()
         self.offscreen_canvas.Clear()
 
         # Determine color based on message_type

@@ -107,7 +107,7 @@ def start():
     while self.input_handler.exit_requested:
         self.display.matrix.Clear() # clear the display
         # here, you can do things with the display - set images, text, etc.
-        self.display.matrix.SwapOnVSync(self.display.offscreen_canvas) # required
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas) # required
         time.sleep(1) # you may wish to change the delay
 
 ```

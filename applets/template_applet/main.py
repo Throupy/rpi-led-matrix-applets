@@ -15,6 +15,7 @@ class TemplateApplet(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
+        self.display.offscreen_canvas.Clear()
         text = "Template"
         # Initial values
         while not self.input_handler.exit_requested:
@@ -32,10 +33,11 @@ class TemplateApplet(Applet):
                 text,
             )
             text = "Applet" if text == "Template" else "Template"
-            self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+            self.display.offscreen_canvas =  self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
             time.sleep(1)
 
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()

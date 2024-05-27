@@ -78,7 +78,7 @@ class TarkovPriceTracker(Applet):
                     )
             else:
                 self.log(f"No item found for {item_name}.")
-            time.sleep(0.1)
+            #time.sleep(0.1)
 
     def display_items(self, items: List[DisplayItem]) -> None:
         """Update matrix display with multiple items' information"""
@@ -113,6 +113,7 @@ class TarkovPriceTracker(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
+        self.display.offscreen_canvas.Clear()
         if not self.items:
             self.fetch_items()
         while not self.input_handler.exit_requested:
@@ -133,12 +134,13 @@ class TarkovPriceTracker(Applet):
                 )
                 self.last_switch_time = current_time
 
-            time.sleep(0.1)
+            #time.sleep(0.1)
 
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
 
 
 def generate_query(item_name: str) -> str:

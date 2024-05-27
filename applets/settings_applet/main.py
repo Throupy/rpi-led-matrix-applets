@@ -13,8 +13,9 @@ class SettingsApplet(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
+        self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
         while not self.input_handler.exit_requested:
-            self.display.matrix.Clear()
             latest_inputs = self.input_handler.get_latest_inputs()
             if latest_inputs["right_pressed"]:
                 # ensure brightness never rises over 100
@@ -37,10 +38,11 @@ class SettingsApplet(Applet):
                 self.display.matrix.brightness, Colours.YELLOW, y=14
             )
 
-            self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
-            time.sleep(0.1)
+            self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+            #time.sleep(0.1)
 
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()

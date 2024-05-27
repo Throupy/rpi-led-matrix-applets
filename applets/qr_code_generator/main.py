@@ -42,6 +42,7 @@ class QRCodeGenerator(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
+        self.display.offscreen_canvas.Clear()
         # Generate QR code image and open it
         image_path = self.generate_qr_code(self.data)
         image = Image.open(image_path)
@@ -61,3 +62,4 @@ class QRCodeGenerator(Applet):
         """Stop the applet"""
         self.log("Stopping")
         self.display.matrix.Clear()
+        self.display.offscreen_canvas.Clear()
