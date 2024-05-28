@@ -19,7 +19,6 @@ class PongGame(Applet):
         self.ball_size = 2
         self.ball_speed = 1.2  # Increase this value to make the ball move faster
         self.reset_game()
-        self.offscreen_canvas = self.display.matrix.CreateFrameCanvas()
         self.player1_pos = self.height // 2 - self.paddle_height // 2
         self.player2_pos = self.height // 2 - self.paddle_height // 2
         self.player_speed = 2.4
@@ -96,18 +95,18 @@ class PongGame(Applet):
 
     def display_game(self) -> None:
         """Display the game on the matrix"""
-        self.offscreen_canvas.Clear()
+        self.display.clear()
 
         # Draw the border
         for x in range(self.width):
-            self.offscreen_canvas.SetPixel(
+            self.display.offscreen_canvas.SetPixel(
                 x,
                 0,
                 Colours.WHITE_NORMAL.red,
                 Colours.WHITE_NORMAL.green,
                 Colours.WHITE_NORMAL.blue,
             )
-            self.offscreen_canvas.SetPixel(
+            self.display.offscreen_canvas.SetPixel(
                 x,
                 self.height - 1,
                 Colours.WHITE_NORMAL.red,
@@ -115,14 +114,14 @@ class PongGame(Applet):
                 Colours.WHITE_NORMAL.blue,
             )
         for y in range(self.height):
-            self.offscreen_canvas.SetPixel(
+            self.display.offscreen_canvas.SetPixel(
                 0,
                 y,
                 Colours.WHITE_NORMAL.red,
                 Colours.WHITE_NORMAL.green,
                 Colours.WHITE_NORMAL.blue,
             )
-            self.offscreen_canvas.SetPixel(
+            self.display.offscreen_canvas.SetPixel(
                 self.width - 1,
                 y,
                 Colours.WHITE_NORMAL.red,
@@ -133,7 +132,7 @@ class PongGame(Applet):
         # Draw the ball
         for dx in range(self.ball_size):
             for dy in range(self.ball_size):
-                self.offscreen_canvas.SetPixel(
+                self.display.offscreen_canvas.SetPixel(
                     self.ball_pos[0] + dx,
                     self.ball_pos[1] + dy,
                     Colours.BLUE.red,
@@ -144,14 +143,14 @@ class PongGame(Applet):
         # Draw the paddles
         for dy in range(self.paddle_height):
             for px in range(self.paddle_thickness):
-                self.offscreen_canvas.SetPixel(
+                self.display.offscreen_canvas.SetPixel(
                     1 + px,
                     self.player1_pos + dy,
                     Colours.GREEN.red,
                     Colours.GREEN.green,
                     Colours.GREEN.blue,
                 )
-                self.offscreen_canvas.SetPixel(
+                self.display.offscreen_canvas.SetPixel(
                     self.width - 2 - px,
                     self.player2_pos + dy,
                     Colours.GREEN.red,
@@ -161,31 +160,22 @@ class PongGame(Applet):
 
         # Draw the scores
         score_text = f"{self.score[0]} - {self.score[1]}"
-        text_length = graphics.DrawText(
-            self.offscreen_canvas,
-            self.display.font,
-            0,
-            0,
-            Colours.WHITE_NORMAL,
-            score_text,
-        )
+        text_length = self.display.get_text_width(score_text)
         text_x = (self.width - text_length) // 2  # Center the text horizontally
-        graphics.DrawText(
-            self.offscreen_canvas,
-            self.display.font,
+        self.display.draw_text(
             text_x,
             8,
-            Colours.WHITE_NORMAL,
             score_text,
-        )  # Adjust Y position as needed
+            Colours.WHITE_NORMAL
+        )
 
-        self.display.matrix.SwapOnVSync(self.offscreen_canvas)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
         time.sleep(0.025)
 
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting Pong Game")
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
         if not self.input_handler.is_controller():
             self.display.show_message("Controller required!", "error")
             time.sleep(2)
@@ -204,5 +194,4 @@ class PongGame(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping Pong Game")
-        self.display.matrix.Clear()
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()

@@ -6,7 +6,7 @@ import importlib.util
 import evdev
 from typing import Dict, List
 from textwrap import wrap
-from matrix.matrix_display import MatrixDisplay, graphics
+from matrix.matrix_display import MatrixDisplay
 from matrix.colours import Colours
 from applets.base_applet import Applet
 from applets.applet_information_viewer.main import AppletInformationViewer
@@ -61,7 +61,7 @@ class MasterApp:
 
     def display_menu(self) -> None:
         """Display the menu system on the RGB Matrix"""
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
         y_offset = 10  # Start a bit down from the top
         start_index = self.page_index * self.MAX_ITEMS_PER_PAGE
         end_index = start_index + self.MAX_ITEMS_PER_PAGE
@@ -76,8 +76,11 @@ class MasterApp:
             # Subtract 2 because of the '* ' prefix on menu items
             wrapped_text = self.wrap_menu_items_text(applet, self.display.max_chars_per_line - 2)
             for line in wrapped_text:
-                graphics.DrawText(
-                    self.display.offscreen_canvas, self.display.font, 1, y_offset, color, line
+                self.display.draw_text(
+                    1,
+                    y_offset,
+                    line,
+                    color
                 )
                 y_offset += 10  # this is for line height
             y_offset += 5  # Additional spacing between applets
@@ -91,13 +94,11 @@ class MasterApp:
         text_length = self.display.get_text_width(page_indicator_text)
         text_x = (self.display.matrix.width - text_length) // 2
         text_y = self.display.matrix.height - 4  # near the bottom
-        graphics.DrawText(
-            self.display.offscreen_canvas,
-            self.display.font,
+        self.display.draw_text(
             text_x,
             text_y,
-            indicator_color,
             page_indicator_text,
+            indicator_color
         )
 
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
@@ -156,15 +157,13 @@ class MasterApp:
 
     def launch_applet(self, applet: Applet) -> None:
         try:
-            self.display.matrix.Clear()
-            self.display.offscreen_canvas.Clear()
+            self.display.clear()
             applet.start()
         except KeyboardInterrupt:
             pass
         finally:
             applet.stop()
-            self.display.matrix.Clear()
-            self.display.offscreen_canvas.Clear()
+            self.display.clear()
             self.input_handler.exit_requested = False
             self.last_input_time = time.time()
 

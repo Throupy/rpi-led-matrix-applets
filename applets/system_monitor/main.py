@@ -33,53 +33,38 @@ class SystemMonitor(Applet):
         red = int(usage_percent * 2.55)
         return graphics.Color(red, green, 0)
 
-    def get_text_width(self, text: str) -> int:
-        """Calculate the width of the text in pixels"""
-        return graphics.DrawText(
-            self.display.offscreen_canvas,
-            self.display.font,
-            0,
-            0,
-            Colours.BLACK,
-            text,
-        )
-
     def display_stats(self, stats: Dict[str, str]) -> None:
         """Display system statistics on the matrix"""
-
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
 
         y_offset = 10  # lil bit down from the top
         label_colour = Colours.WHITE_NORMAL
 
         # Find longest key - display values inline with the end of longest line
         longest_key = max(stats.keys(), key=len)
-        key_offset = self.get_text_width(longest_key) + 5  # Add 5 padding
+        key_offset = self.display.get_text_width(longest_key) + 5 # 5 padding
 
         for stat_name, stat_value in stats.items():
             if "%" in stat_value:
                 cpu_percent = float(stat_value.strip("%"))
-                value_color = self.get_color_from_usage(cpu_percent)
+                value_colour = self.get_color_from_usage(cpu_percent)
             else:
-                value_color = Colours.WHITE_MUTED
+                value_colour = Colours.WHITE_MUTED
 
             # draw stat name
-            graphics.DrawText(
-                self.display.offscreen_canvas,
-                self.display.font,
+            self.display.draw_text(
                 1,
                 y_offset,
-                label_colour,
                 stat_name,
+                label_colour
             )
+
             # draw stat value
-            graphics.DrawText(
-                self.display.offscreen_canvas,
-                self.display.font,
+            self.display.draw_text(
                 key_offset,
                 y_offset,
-                value_color,
                 stat_value,
+                value_colour
             )
             y_offset += 10  # line height
 
@@ -89,7 +74,7 @@ class SystemMonitor(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
         while not self.input_handler.exit_requested:
             stats = self.fetch_stats()
             self.display_stats(stats)
@@ -97,5 +82,4 @@ class SystemMonitor(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()

@@ -105,7 +105,7 @@ def start():
     """Start the applet"""
     self.log("Starting applet")
     while self.input_handler.exit_requested:
-        self.display.matrix.Clear() # clear the display
+        self.display.clear() # clear the display
         # here, you can do things with the display - set images, text, etc.
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas) # required
         time.sleep(1) # you may wish to change the delay
@@ -124,19 +124,17 @@ def start():
     """Start the applet"""
     self.log("Starting applet")
     while self.input_handler.exit_requested:
-        self.display.matrix.Clear() # clear the display
+        self.display.clear() # clear the display
         # fetch data from API
         text = self.fetch_data()
         # write the data to the matrix
-        graphics.DrawText(
-            self.display.offscreen_canvas,
-            self.display.font,
+        self.display.draw_text(
             18, # x
             32, # y
-            graphics.Color(200, 200, 200), # white
             text,
+            graphics.Color(200, 200, 200) # white
         )
-        self.display.matrix.SwapOnVSync(self.display.offscreen_canvas) # required
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
         time.sleep(1) # you may wish to change the delay
 ```
 
@@ -203,3 +201,4 @@ The best way to see this in action is to just look at the `template_applet` dire
 
 ## Bugs
 - [ ] Text wrapping inconsistent, see helldivers statistics loading page. Need to wrap on words not chars.
+- [ ] Known bug when using tom-thumb font, internet speed test claims there is an overlap

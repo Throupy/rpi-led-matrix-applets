@@ -40,7 +40,7 @@ class HelldiversPlanetsInfo(Applet):
         self.log(
             f"Updating display to show information of planet with name {planet.name}"
         )
-        self.display.matrix.Clear()
+        self.display.clear()
         # Draw the planet's name
         self.display.draw_centered_text(planet.name, planet.colour, start_y=8)
 
@@ -67,7 +67,7 @@ class HelldiversPlanetsInfo(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        self.display.offscreen_canvas.Clear()
+        
         # when the app is "loaded from memory" it messes with previous error handling
         # to prevent this, I have added a presence check on self.planets
         if not self.planets:
@@ -92,6 +92,6 @@ class HelldiversPlanetsInfo(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
+        
 
