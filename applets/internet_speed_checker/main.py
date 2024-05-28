@@ -75,27 +75,25 @@ class SpeedCheck(Applet):
         # Start the threads
         self.download_thread.start()
 
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
 
         while self.test_running and not self.input_handler.exit_requested:
             # Calculate speed in megabits per second
             speed_mbps = (self.download_speed / (1024 * 1024)) * 8
             text = f"{speed_mbps:.2f} Mb/s"
-            self.display.offscreen_canvas.Clear()
+            self.display.clear()
             # Calculate colour based on speed
             colour = self.get_speed_color(speed_mbps)
             text_width = self.display.get_text_width(text)
 
             text_x = (self.display.matrix.width - text_width) // 2
-            text_y = self.display.matrix.height / 2
+            text_y = self.display.matrix.height // 2
 
-            graphics.DrawText(
-                self.display.offscreen_canvas,
-                self.display.font,
+            self.display.draw_text(
                 text_x,
                 text_y,
-                colour,
                 text,
+                colour
             )
 
             self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
@@ -115,5 +113,4 @@ class SpeedCheck(Applet):
         if self.download_thread:
             self.download_thread.join()
 
-        self.display.matrix.Clear()
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()

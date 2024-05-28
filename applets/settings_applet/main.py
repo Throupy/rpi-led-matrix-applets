@@ -1,5 +1,5 @@
-import time
 from matrix.colours import Colours
+import time
 from applets.base_applet import Applet
 
 
@@ -13,7 +13,9 @@ class SettingsApplet(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        self.display.offscreen_canvas.Clear()
+        # don't know why this doesn't work but don't have time to check
+        # normal .clear() doesn't remove menu items
+        self.display.matrix.Clear()
         while not self.input_handler.exit_requested:
             latest_inputs = self.input_handler.get_latest_inputs()
             if latest_inputs["right_pressed"]:
@@ -42,5 +44,4 @@ class SettingsApplet(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()

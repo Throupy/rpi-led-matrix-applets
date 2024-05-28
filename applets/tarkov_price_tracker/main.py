@@ -81,7 +81,7 @@ class TarkovPriceTracker(Applet):
 
     def display_items(self, items: List[DisplayItem]) -> None:
         """Update matrix display with multiple items' information"""
-        self.display.matrix.Clear()
+        self.display.clear()
         for index, item in enumerate(items):
             image = self.images[item.name]
             self.display.offscreen_canvas.SetImage(image.convert("RGB"), 0, index * 16)
@@ -96,13 +96,11 @@ class TarkovPriceTracker(Applet):
                 text = f"{short_price} TR."
                 color = Colours.GREEN
 
-            graphics.DrawText(
-                self.display.offscreen_canvas,
-                self.display.font,
+            self.display.draw_text(
                 18,
                 (index * 16) + 12,
-                color,
                 text,
+                color
             )
 
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
@@ -112,7 +110,7 @@ class TarkovPriceTracker(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
         if not self.items:
             self.fetch_items()
         while not self.input_handler.exit_requested:
@@ -136,8 +134,7 @@ class TarkovPriceTracker(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
 
 
 def generate_query(item_name: str) -> str:

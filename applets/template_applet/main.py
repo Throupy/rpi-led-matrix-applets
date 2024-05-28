@@ -15,22 +15,20 @@ class TemplateApplet(Applet):
     def start(self) -> None:
         """Start the applet"""
         self.log("Starting")
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
         text = "Template"
         # Initial values
         while not self.input_handler.exit_requested:
-            self.display.matrix.Clear()
-            graphics.DrawText(
-                self.display.offscreen_canvas,
-                self.display.font,
+            self.display.clear()
+            self.display.draw_text(
                 18,
                 32,
+                text,
                 graphics.Color(
                     random.randint(0, 255),
                     random.randint(0, 255),
                     random.randint(0, 255),
-                ),
-                text,
+                )
             )
             text = "Applet" if text == "Template" else "Template"
             self.display.offscreen_canvas =  self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
@@ -39,5 +37,4 @@ class TemplateApplet(Applet):
     def stop(self) -> None:
         """Stop the applet"""
         self.log("Stopping")
-        self.display.matrix.Clear()
-        self.display.offscreen_canvas.Clear()
+        self.display.clear()
