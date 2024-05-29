@@ -9,6 +9,7 @@ from applets.applet_information_viewer.main import AppletInformationViewer
 from applets.settings_applet.main import SettingsApplet
 from applets.idle_applet.main import IdleApplet
 
+
 class MasterApp(Applet):
     def __init__(self, **kwargs) -> None:
         """Initialise a new MasterApp Instance with the provided display, input handler, and applet manager."""
@@ -52,13 +53,17 @@ class MasterApp(Applet):
         for i, applet in enumerate(current_page_applets):
             i += start_index
             color = Colours.RED if i == self.current_index else Colours.WHITE_MUTED
-            wrapped_text = self.wrap_menu_items_text(applet, self.display.max_chars_per_line - 2)
+            wrapped_text = self.wrap_menu_items_text(
+                applet, self.display.max_chars_per_line - 2
+            )
             for line in wrapped_text:
                 self.display.draw_text(1, y_offset, line, color)
                 y_offset += 10
             y_offset += 5
 
-        total_pages = (len(self.applets) + self.MAX_ITEMS_PER_PAGE - 1) // self.MAX_ITEMS_PER_PAGE
+        total_pages = (
+            len(self.applets) + self.MAX_ITEMS_PER_PAGE - 1
+        ) // self.MAX_ITEMS_PER_PAGE
         page_indicator_text = f"[{self.page_index + 1}/{total_pages}]"
         indicator_color = Colours.WHITE_MUTED
         text_length = self.display.get_text_width(page_indicator_text)
@@ -66,7 +71,9 @@ class MasterApp(Applet):
         text_y = self.display.matrix.height - 4
         self.display.draw_text(text_x, text_y, page_indicator_text, indicator_color)
 
-        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+            self.display.offscreen_canvas
+        )
 
     def navigate_menu(self) -> None:
         """Change the current index, representing menu navigation."""
@@ -134,7 +141,9 @@ class MasterApp(Applet):
                 self.launch_applet(self.create_settings_applet())
 
             if time.time() - self.last_input_time > self.IDLE_SCREEN_THRESHOLD_SECONDS:
-                idle_applet = IdleApplet(display=self.display, input_handler=self.input_handler)
+                idle_applet = IdleApplet(
+                    display=self.display, input_handler=self.input_handler
+                )
                 self.launch_applet(idle_applet)
 
     def stop(self) -> None:

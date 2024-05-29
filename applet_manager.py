@@ -8,9 +8,15 @@ from input_handlers.base_input_handler import BaseInputHandler
 from applets.base_applet import Applet
 from applets.master_applet.main import MasterApp
 
+
 class AppletManager:
-    def __init__(self, display: MatrixDisplay, input_handler: BaseInputHandler, applets_root_directory: str) -> None:
-        """Initialize the AppletManager with the provided display, input handler, and applets root directory.""" 
+    def __init__(
+        self,
+        display: MatrixDisplay,
+        input_handler: BaseInputHandler,
+        applets_root_directory: str,
+    ) -> None:
+        """Initialize the AppletManager with the provided display, input handler, and applets root directory."""
         self.display = display
         self.input_handler = input_handler
         self.applets_root_directory = applets_root_directory
@@ -21,19 +27,32 @@ class AppletManager:
         applets = {}
         for item in os.listdir(self.applets_root_directory):
             full_path = os.path.join(self.applets_root_directory, item)
-            if os.path.isdir(full_path) and item not in ["__pycache__", "template_applet", "applet_information_viewer", "settings_applet", "idle_applet", "master_applet"]:
+            if os.path.isdir(full_path) and item not in [
+                "__pycache__",
+                "template_applet",
+                "applet_information_viewer",
+                "settings_applet",
+                "idle_applet",
+                "master_applet",
+            ]:
                 config_path = os.path.join(full_path, "config.json")
                 try:
                     with open(config_path, "r") as file:
                         config_data = json.load(file)
                         name = config_data.get("name", "No Name Provided")
                         applets[name] = {
-                            "description": config_data.get("description", "No Description Provided"),
-                            "version": config_data.get("version", "No Version Provided"),
+                            "description": config_data.get(
+                                "description", "No Description Provided"
+                            ),
+                            "version": config_data.get(
+                                "version", "No Version Provided"
+                            ),
                             "author": config_data.get("author", "No Author Provided"),
                             "path": full_path,
                             "options": config_data.get("options", {}),
-                            "class_name": config_data.get("class_name", "No Classname Provided"),
+                            "class_name": config_data.get(
+                                "class_name", "No Classname Provided"
+                            ),
                             "module_path": os.path.join(full_path, "main.py"),
                         }
                 except FileNotFoundError:
@@ -53,7 +72,9 @@ class AppletManager:
 
     def create_master_app(self) -> MasterApp:
         """Create and return an instance of the MasterApp."""
-        return MasterApp(display=self.display, input_handler=self.input_handler, applet_manager=self)
+        return MasterApp(
+            display=self.display, input_handler=self.input_handler, applet_manager=self
+        )
 
     def get_applet_instance_by_name(self, applet_name: str) -> Applet:
         """Retrieve an instance of the applet by its name, dynamically importing it if necessary."""
@@ -64,7 +85,11 @@ class AppletManager:
             AppletClass = self.dynamic_import_applet(module_path, class_name)
             if hasattr(AppletClass, class_name):
                 applet_type = getattr(AppletClass, class_name)
-                return applet_type(display=self.display, options=options, input_handler=self.input_handler)
+                return applet_type(
+                    display=self.display,
+                    options=options,
+                    input_handler=self.input_handler,
+                )
         print(f"Applet {applet_name} not found!")
         return None
 
