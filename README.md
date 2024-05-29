@@ -161,6 +161,7 @@ The best way to see this in action is to just look at the `template_applet` dire
 - [ ] Add a border to the menu (can be part of theming feature)
 - [ ] Currently, it looks bad if the app takes like 1 second to load and you just get a tiny flicker of the loading screen. Maybe add a time threshold before the loading screen is presented?
 - [ ] Press B (or CTRL+C, whatever) when in menu to quit application
+- [ ] Create 2 dirs in applets/ - 1 for system applets (settings, master, etc. ones that shouldn't be displayed), and another for applets which should be loaded and displayed on the menu.
 
 ## Applets
 - [X] Some kind of Config class for an applet e.g. for the tarkov applet, I want to be able to specify what items to get the values for.
