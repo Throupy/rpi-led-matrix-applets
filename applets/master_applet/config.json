@@ -1,0 +1,7 @@
+{
+    "name": "Master App",
+    "description": "Master application for managing all applets.",
+    "version": "1.0",
+    "author": "Your Name",
+    "class_name": "MasterApp"
+}
