@@ -104,13 +104,9 @@ class HelldiversKillCounter(Applet):
         self.display.offscreen_canvas.SetImage(image.convert("RGB"), x_offset, y_offset)
 
         # 75% down from the top (make room for image)
-        offset_y = (self.display.matrix.height // 4) * 3 
+        offset_y = (self.display.matrix.height // 4) * 3
 
-        self.display.draw_centered_text(
-            text,
-            Colours.WHITE_NORMAL,
-            start_y=offset_y
-        )
+        self.display.draw_centered_text(text, Colours.WHITE_NORMAL, start_y=offset_y)
 
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
             self.display.offscreen_canvas
@@ -149,7 +145,7 @@ class HelldiversKillCounter(Applet):
         """Stop the applet"""
         self.log("Stopping")
         self.display.clear()
-        
+
         # need to handle destruction here..
         # @chadders recall our conversation about memory management
         # and see TODO in README.md

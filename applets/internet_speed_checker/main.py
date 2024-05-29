@@ -89,12 +89,7 @@ class SpeedCheck(Applet):
             text_x = (self.display.matrix.width - text_width) // 2
             text_y = self.display.matrix.height // 2
 
-            self.display.draw_text(
-                text_x,
-                text_y,
-                text,
-                colour
-            )
+            self.display.draw_text(text_x, text_y, text, colour)
 
             self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
                 self.display.offscreen_canvas

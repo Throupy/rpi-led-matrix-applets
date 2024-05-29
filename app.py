@@ -74,14 +74,11 @@ class MasterApp:
             i += start_index
             color = Colours.RED if i == self.current_index else Colours.WHITE_MUTED
             # Subtract 2 because of the '* ' prefix on menu items
-            wrapped_text = self.wrap_menu_items_text(applet, self.display.max_chars_per_line - 2)
+            wrapped_text = self.wrap_menu_items_text(
+                applet, self.display.max_chars_per_line - 2
+            )
             for line in wrapped_text:
-                self.display.draw_text(
-                    1,
-                    y_offset,
-                    line,
-                    color
-                )
+                self.display.draw_text(1, y_offset, line, color)
                 y_offset += 10  # this is for line height
             y_offset += 5  # Additional spacing between applets
 
@@ -94,12 +91,7 @@ class MasterApp:
         text_length = self.display.get_text_width(page_indicator_text)
         text_x = (self.display.matrix.width - text_length) // 2
         text_y = self.display.matrix.height - 4  # near the bottom
-        self.display.draw_text(
-            text_x,
-            text_y,
-            page_indicator_text,
-            indicator_color
-        )
+        self.display.draw_text(text_x, text_y, page_indicator_text, indicator_color)
 
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
             self.display.offscreen_canvas

@@ -42,7 +42,9 @@ class AppletInformationViewer(Applet):
 
                 # Draw Value
                 self.display.draw_centered_text(current_value, Colours.WHITE_MUTED)
-                self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+                self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+                    self.display.offscreen_canvas
+                )
                 self.current_index += 1
                 self.last_switch_time = current_time
 
@@ -50,4 +52,3 @@ class AppletInformationViewer(Applet):
         """Stop the applet"""
         self.log("Stopping")
         self.display.clear()
-

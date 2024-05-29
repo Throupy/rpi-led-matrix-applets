@@ -42,7 +42,7 @@ class SystemMonitor(Applet):
 
         # Find longest key - display values inline with the end of longest line
         longest_key = max(stats.keys(), key=len)
-        key_offset = self.display.get_text_width(longest_key) + 5 # 5 padding
+        key_offset = self.display.get_text_width(longest_key) + 5  # 5 padding
 
         for stat_name, stat_value in stats.items():
             if "%" in stat_value:
@@ -52,23 +52,15 @@ class SystemMonitor(Applet):
                 value_colour = Colours.WHITE_MUTED
 
             # draw stat name
-            self.display.draw_text(
-                1,
-                y_offset,
-                stat_name,
-                label_colour
-            )
+            self.display.draw_text(1, y_offset, stat_name, label_colour)
 
             # draw stat value
-            self.display.draw_text(
-                key_offset,
-                y_offset,
-                stat_value,
-                value_colour
-            )
+            self.display.draw_text(key_offset, y_offset, stat_value, value_colour)
             y_offset += 10  # line height
 
-        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+            self.display.offscreen_canvas
+        )
         time.sleep(1)
 
     def start(self) -> None:

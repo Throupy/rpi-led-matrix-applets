@@ -162,14 +162,11 @@ class PongGame(Applet):
         score_text = f"{self.score[0]} - {self.score[1]}"
         text_length = self.display.get_text_width(score_text)
         text_x = (self.width - text_length) // 2  # Center the text horizontally
-        self.display.draw_text(
-            text_x,
-            8,
-            score_text,
-            Colours.WHITE_NORMAL
-        )
+        self.display.draw_text(text_x, 8, score_text, Colours.WHITE_NORMAL)
 
-        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+        self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+            self.display.offscreen_canvas
+        )
         time.sleep(0.025)
 
     def start(self) -> None:

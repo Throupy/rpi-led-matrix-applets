@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class BoundingBox:
     # Co-ordinate like structure, always rectangles

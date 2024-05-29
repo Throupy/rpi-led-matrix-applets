@@ -39,7 +39,9 @@ class SettingsApplet(Applet):
                 self.display.matrix.brightness, Colours.YELLOW, y=14
             )
 
-            self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+            self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+                self.display.offscreen_canvas
+            )
 
     def stop(self) -> None:
         """Stop the applet"""

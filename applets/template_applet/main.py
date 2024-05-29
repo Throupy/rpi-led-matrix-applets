@@ -28,10 +28,12 @@ class TemplateApplet(Applet):
                     random.randint(0, 255),
                     random.randint(0, 255),
                     random.randint(0, 255),
-                )
+                ),
             )
             text = "Applet" if text == "Template" else "Template"
-            self.display.offscreen_canvas =  self.display.matrix.SwapOnVSync(self.display.offscreen_canvas)
+            self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
+                self.display.offscreen_canvas
+            )
             time.sleep(1)
 
     def stop(self) -> None:

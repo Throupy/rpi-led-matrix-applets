@@ -96,12 +96,7 @@ class TarkovPriceTracker(Applet):
                 text = f"{short_price} TR."
                 color = Colours.GREEN
 
-            self.display.draw_text(
-                18,
-                (index * 16) + 12,
-                text,
-                color
-            )
+            self.display.draw_text(18, (index * 16) + 12, text, color)
 
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(
             self.display.offscreen_canvas
