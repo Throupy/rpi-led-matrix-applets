@@ -104,7 +104,7 @@ All applets should implement the `start` method. Inside this method you should a
 def start():
     """Start the applet"""
     self.log("Starting applet")
-    while self.input_handler.exit_requested:
+    while not self.input_handler.exit_requested:
         self.display.clear() # clear the display
         # here, you can do things with the display - set images, text, etc.
         self.display.offscreen_canvas = self.display.matrix.SwapOnVSync(self.display.offscreen_canvas) # required
