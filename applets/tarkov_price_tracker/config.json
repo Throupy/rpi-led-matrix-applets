@@ -6,7 +6,6 @@
     "class_name": "TarkovPriceTracker",
     "options": {
         "item_names": [
-            "GP Coin",
             "Milk",
             "Goldenstar",
             "Physical Bitcoin",
